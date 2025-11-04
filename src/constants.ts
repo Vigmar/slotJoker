@@ -1,0 +1,16 @@
+export const GAME_TIME= 120;
+export const WHITE_COLOR = "#FFFFFF";
+export const MOVE_UI_TIME = 500;
+export const FONT_SIZE = 32;
+export const UI_FONT_SIZE = 28;
+export const DRUM_WIDTH = 341;
+export const DRUM_Y = 185;
+export const DRUM_X = 17;
+export const ITEM_WIDTH = 330;
+export const ITEM_HEIGHT = 340;
+export const TOTAL_ITEMS = 6;
+export const DRUM_HEIGHT = 620;
+export const GAMESCREEN_WIDTH = 800;
+export const GAMESCREEN_HEIGHT = 800;
+export const DRUMS_SPEED = [2000, 3000, 4000, 5000, 6000];
+export const STOPPING_TIME = 1000;
