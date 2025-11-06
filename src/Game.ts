@@ -47,6 +47,8 @@ const BET_COUNT = [0, 250, 250, 820, 620, 5620];
 
 export default class MainGame extends Phaser.Scene {
     grid = [];
+    sliders = [];
+    gridTweens = [];
 
     isProcessing = false;
     isMoving = false;
@@ -54,11 +56,14 @@ export default class MainGame extends Phaser.Scene {
     tapeContainer = null;
     gameBackContainer = null;
     cellsFrame = null;
+    frameGlow = null;
     backContainer = null;
     uiContainer = null;
     maskGraphics = null;
     cashoutBtn = null;
     spinBtn = null;
+    betBtn = null;
+    
 
     betCount = null;
     betContainer = null;
@@ -83,7 +88,9 @@ export default class MainGame extends Phaser.Scene {
         this.load.atlas("items", "assets/joker1.png", "assets/joker1.json");
         this.load.image("table", "assets/table.png");
         this.load.image("tframe", "assets/table_ram.png");
-        this.load.image("bg", "assets/background.jpg");
+        this.load.image("glow", "assets/glow.png");
+        this.load.image("bg", "assets/background.png");
+        this.load.image("endbg", "assets/red_background.png");
         this.load.image("endbtn", "assets/endbtn.png");
         this.load.image("endeffect", "assets/endeffect.png");
     }
@@ -121,11 +128,44 @@ export default class MainGame extends Phaser.Scene {
 
         console.log("SCR", this.scale.width, this.scale.height);
 
+        
+        this.anims.create({
+            key: "sliders",
+            frames: [
+                { key: "items", frame: "slider/slider_1.png" },
+                { key: "items", frame: "slider/slider_2.png" },
+                { key: "items", frame: "slider/slider_3.png" },
+                { key: "items", frame: "slider/slider_4.png" },
+                { key: "items", frame: "slider/slider_5.png" },
+                { key: "items", frame: "slider/slider_6.png" },
+                { key: "items", frame: "slider/slider_7.png" },
+                { key: "items", frame: "slider/slider_8.png" },
+                { key: "items", frame: "slider/slider_9.png" },
+            ],
+            frameRate: 15,
+            repeat: -1,
+        });    
+
         this.gameBackContainer = this.add.container();
         const cellsBack = this.add
             .sprite(GRID_OFFSET_X, GRID_OFFSET_Y - 5, "table")
             .setScale(0.33, 0.33)
             .setOrigin(0, 0);
+        this.gameBackContainer.add(cellsBack);
+
+        this.sliders = [];
+
+        for (let i=0;i<COLS;i++)
+        {
+
+            this.sliders[i] = this.add
+            .sprite(GRID_OFFSET_X+CELL_SIZE_W*i, GRID_OFFSET_Y , "items","slider/slider_1.png")
+            .setScale(0.7, 0.7)
+            .setOrigin(0, 0);
+            this.sliders[i].play("sliders");
+            this.gameBackContainer.add(this.sliders[i]);
+        }
+
         this.gameBackContainer.add(cellsBack);
 
         // === КОНТЕЙНЕР ДЛЯ СИМВОЛОВ ===
@@ -137,8 +177,26 @@ export default class MainGame extends Phaser.Scene {
 
         this.uiContainer = this.add.container();
 
+        
+        
+        this.frameGlow = this.add
+            .sprite(GRID_OFFSET_X - 150, GRID_OFFSET_Y - 150, "glow")
+            .setScale(0.325, 0.325)
+            .setOrigin(0);
+        this.uiContainer.add(this.frameGlow);
+
+        this.tweens.add({
+            targets: this.frameGlow,
+            alpha: 0.5,
+            duration: 1000,
+            ease: "Power2",
+            yoyo: true,
+            repeat:-1
+        });
+        
+
         this.cellsFrame = this.add
-            .sprite(GRID_OFFSET_X - 100, GRID_OFFSET_Y - 100, "tframe")
+            .sprite(GRID_OFFSET_X-100, GRID_OFFSET_Y - 100, "tframe")
             .setScale(0.325, 0.325)
             .setOrigin(0);
         this.uiContainer.add(this.cellsFrame);
@@ -181,6 +239,16 @@ export default class MainGame extends Phaser.Scene {
                 }
             });
 
+        this.betBtn = this.add
+            .sprite(
+                GRID_OFFSET_X,
+                GRID_OFFSET_Y + ROWS * CELL_SIZE + 20,
+                "items",
+                "bet.png"
+            )
+            .setOrigin(0, 0)
+            .setScale(0.4);
+
         this.betContainer = this.add.container();
         //this.betCount = this.createRouletteCounter(0,0, 0.22, 0, 0, 0);
         this.betCount = this.createRouletteCounter(0, 0, 0.22, 0, 0, 0);
@@ -189,9 +257,10 @@ export default class MainGame extends Phaser.Scene {
         this.betContainer.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + 55;
 
         this.uiContainer.add(this.spinBtn);
-
+        this.uiContainer.add(this.betBtn);     
         this.uiContainer.add(this.betContainer);
         this.uiContainer.add(this.cashoutBtn);
+        
         this.betContainer.add(this.betCount);
 
         this.pushSprite = this.add
@@ -457,6 +526,8 @@ export default class MainGame extends Phaser.Scene {
     }
 
     startEndScreen() {
+        this.bg.setTexture("endbg");
+        this.betBtn.setVisible(false);
         this.betContainer.setVisible(false);
         this.spinBtn.setVisible(false);
         this.cashoutBtn.setVisible(false);
@@ -467,7 +538,7 @@ export default class MainGame extends Phaser.Scene {
         this.endEffect = this.add
             .sprite(
                 (COLS * CELL_SIZE_W) / 2,
-                GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2 - 20,
+                GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2 ,
                 "endeffect"
             )
             .setOrigin(0.5, 1)
@@ -481,23 +552,24 @@ export default class MainGame extends Phaser.Scene {
                 "endbtn"
             )
             .setOrigin(0.5, 0.5)
-            .setScale(0.4);
+            .setScale(0.5);
         this.uiContainer.add(this.endSprite);
     }
 
     resizeGame() {
         this.bgScale =
             this.scale.width > this.scale.height
-                ? this.scale.width / 1920
-                : this.scale.height / 1920;
+                ? this.scale.width / 2048
+                : this.scale.height / 2048;
 
         this.bgItemScale = this.scale.height / 1400;
+
         this.fieldScale =
             this.scale.width < this.scale.height
                 ? this.scale.width /
-                  (GRID_OFFSET_X * 2 + CELL_SIZE_W * COLS + 100)
+                  (GRID_OFFSET_X * 2 + CELL_SIZE_W * COLS + 200)
                 : this.scale.height /
-                  (GRID_OFFSET_Y * 2 + CELL_SIZE * ROWS + 100);
+                  (GRID_OFFSET_Y * 2 + CELL_SIZE * ROWS + 250);
 
         this.shiftX =
             (this.scale.width -
