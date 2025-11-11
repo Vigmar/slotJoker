@@ -5,7 +5,7 @@ export const ROWS = 4;
 export const SYMBOL_TYPES = 8;
 export const CELL_SIZE = 80;
 export const CELL_SIZE_W = 105;
-export const GRID_OFFSET_X = 0;
+export const GRID_OFFSET_X = 36;
 export const GRID_OFFSET_Y = 100;
 export const TAPE_STEP_ITEMS_COUNT = 50;
 export const ITEM_NAMES = [
@@ -63,7 +63,6 @@ export default class MainGame extends Phaser.Scene {
     cashoutBtn = null;
     spinBtn = null;
     betBtn = null;
-    
 
     betCount = null;
     betContainer = null;
@@ -74,7 +73,14 @@ export default class MainGame extends Phaser.Scene {
     bonusSprite = null;
     endEffect = null;
     endSprite = null;
+    joker1 = null;
+    joker2 = null;
+    soundBtn = null;
+    tutorSprite = null;
+    tutorTween = null;
+    ambSound = null;
 
+    isSoundEnable = true;
     gameStep = 0;
     bg = null;
     bgScale = 1;
@@ -83,16 +89,24 @@ export default class MainGame extends Phaser.Scene {
     pushScale = 1;
     shiftX = 0;
     shiftY = 0;
+    offsetX = 0;
 
     preload() {
         this.load.atlas("items", "assets/joker1.png", "assets/joker1.json");
+        this.load.atlas("slider", "assets/jslider.png", "assets/jslider.json");
         this.load.image("table", "assets/table.png");
         this.load.image("tframe", "assets/table_ram.png");
         this.load.image("glow", "assets/glow.png");
-        this.load.image("bg", "assets/background.png");
-        this.load.image("endbg", "assets/red_background.png");
+        this.load.image("endbg", "assets/background.jpg");
         this.load.image("endbtn", "assets/endbtn.png");
         this.load.image("endeffect", "assets/endeffect.png");
+        this.load.image("joker", "assets/joker.png");
+
+        this.load.audio("lose", "sounds/lose.mp3");
+        this.load.audio("end", "sounds/end.mp3");
+        this.load.audio("win", "sounds/win.mp3");
+        this.load.audio("click", "sounds/click.mp3");
+        this.load.audio("ambient", "sounds/ambient.mp3");
     }
 
     create() {
@@ -109,44 +123,50 @@ export default class MainGame extends Phaser.Scene {
 
         this.bgScale =
             this.scale.width > this.scale.height
-                ? this.scale.width / 1920
-                : this.scale.height / 1920;
+                ? this.scale.width / 1024
+                : this.scale.height / 1024;
         //this.bgItemScale = this.scale.width<this.scale.height?this.scale.width/1920:this.scale.height/1920;
         this.bgItemScale = this.scale.height / 1400;
-        this.fieldScale =
-            this.scale.width < this.scale.height
-                ? this.scale.width /
-                  (GRID_OFFSET_X * 2 + CELL_SIZE_W * COLS + 100)
-                : this.scale.height /
-                  (GRID_OFFSET_Y * 2 + CELL_SIZE * ROWS + 100);
+
         this.bg = this.add
-            .sprite(this.scale.width / 2, this.scale.height / 2, "bg")
+            .sprite(this.scale.width / 2, this.scale.height / 2, "endbg")
             .setOrigin(0.5, 0.5)
             .setScale(this.bgScale);
 
         this.backContainer = this.add.container();
 
-        console.log("SCR", this.scale.width, this.scale.height);
-
         
+
         this.anims.create({
             key: "sliders",
             frames: [
-                { key: "items", frame: "slider/slider_1.png" },
-                { key: "items", frame: "slider/slider_2.png" },
-                { key: "items", frame: "slider/slider_3.png" },
-                { key: "items", frame: "slider/slider_4.png" },
-                { key: "items", frame: "slider/slider_5.png" },
-                { key: "items", frame: "slider/slider_6.png" },
-                { key: "items", frame: "slider/slider_7.png" },
-                { key: "items", frame: "slider/slider_8.png" },
-                { key: "items", frame: "slider/slider_9.png" },
+                { key: "slider", frame: "slider_1.png" },
+                { key: "slider", frame: "slider_2.png" },
+                { key: "slider", frame: "slider_3.png" },
+                { key: "slider", frame: "slider_4.png" },
+                { key: "slider", frame: "slider_5.png" },
+                { key: "slider", frame: "slider_6.png" },
+                { key: "slider", frame: "slider_7.png" },
+                { key: "slider", frame: "slider_8.png" },
+                { key: "slider", frame: "slider_9.png" },
             ],
             frameRate: 15,
             repeat: -1,
-        });    
+        });
 
         this.gameBackContainer = this.add.container();
+
+        this.joker1 = this.add
+            .sprite(
+                COLS * CELL_SIZE_W + GRID_OFFSET_X - 10,
+                GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2,
+                "joker"
+            )
+            .setOrigin(0, 0.5)
+            .setScale(0.6);
+
+        this.gameBackContainer.add(this.joker1);
+
         const cellsBack = this.add
             .sprite(GRID_OFFSET_X, GRID_OFFSET_Y - 5, "table")
             .setScale(0.33, 0.33)
@@ -155,13 +175,16 @@ export default class MainGame extends Phaser.Scene {
 
         this.sliders = [];
 
-        for (let i=0;i<COLS;i++)
-        {
-
+        for (let i = 0; i < COLS; i++) {
             this.sliders[i] = this.add
-            .sprite(GRID_OFFSET_X+CELL_SIZE_W*i, GRID_OFFSET_Y , "items","slider/slider_1.png")
-            .setScale(0.7, 0.7)
-            .setOrigin(0, 0);
+                .sprite(
+                    GRID_OFFSET_X + CELL_SIZE_W * i,
+                    GRID_OFFSET_Y,
+                    "slider",
+                    "slider_1.png"
+                )
+                .setScale(0.7, 0.7)
+                .setOrigin(0, 0);
             this.sliders[i].play("sliders");
             this.gameBackContainer.add(this.sliders[i]);
         }
@@ -177,8 +200,6 @@ export default class MainGame extends Phaser.Scene {
 
         this.uiContainer = this.add.container();
 
-        
-        
         this.frameGlow = this.add
             .sprite(GRID_OFFSET_X - 150, GRID_OFFSET_Y - 150, "glow")
             .setScale(0.325, 0.325)
@@ -191,12 +212,11 @@ export default class MainGame extends Phaser.Scene {
             duration: 1000,
             ease: "Power2",
             yoyo: true,
-            repeat:-1
+            repeat: -1,
         });
-        
 
         this.cellsFrame = this.add
-            .sprite(GRID_OFFSET_X-100, GRID_OFFSET_Y - 100, "tframe")
+            .sprite(GRID_OFFSET_X - 100, GRID_OFFSET_Y - 100, "tframe")
             .setScale(0.325, 0.325)
             .setOrigin(0);
         this.uiContainer.add(this.cellsFrame);
@@ -205,6 +225,50 @@ export default class MainGame extends Phaser.Scene {
         this.gameContainer.setScale(this.fieldScale);
         this.uiContainer.setScale(this.fieldScale);
         this.maskGraphics.setScale(this.fieldScale);
+
+        this.soundBtn = this.add
+            .sprite(0 + 10, this.scale.height - 50, "items", "volumeOff.png")
+            .setOrigin(0, 1)
+            .setScale(0.42 * this.fieldScale)
+            .setInteractive()
+            .on("pointerdown", () => {
+                let scaleX = 1;
+                let scaleY = 1;
+                let scrX = 0;
+                let scrY = 0;
+
+                if (window.innerWidth > window.innerHeight) {
+                    scaleX = window.innerHeight / window.innerWidth;
+                    scrX = 800 * (1 - scaleX);
+                } else {
+                    scaleY = window.innerWidth / window.innerHeight;
+                    scrY = 800 * (1 - scaleY);
+                }
+
+                if (!this.isSoundEnable) {
+                    if (!this.ambSound)
+                        this.ambSound = this.sound.add("ambient");
+
+                    this.ambSound.play({
+                        loop: true,
+                    });
+                    this.isSoundEnable = true;
+                    this.soundBtn.setTexture("items", "volumeOff.png");
+                    this.soundBtn.setScale(
+                        0.42 * this.fieldScale * scaleX,
+                        0.42 * this.fieldScale * scaleY
+                    );
+                } else {
+                    this.isSoundEnable = false;
+                    if (this.ambSound) this.ambSound.stop();
+
+                    this.soundBtn.setTexture("items", "volumeOn.png");
+                    this.soundBtn.setScale(
+                        0.7 * this.fieldScale * scaleX,
+                        0.7 * this.fieldScale * scaleY
+                    );
+                }
+            });
 
         this.spinBtn = this.add
             .sprite(
@@ -217,7 +281,8 @@ export default class MainGame extends Phaser.Scene {
             .setInteractive()
             .on("pointerdown", () => {
                 if (!this.isMoving) {
-                    console.log("click", this.gameStep);
+                    this.stopTutorial();
+                    
                     this.gameStep += 1;
                     if (this.gameStep < MATHCES.length)
                         this.startNewGame(MATHCES[this.gameStep]);
@@ -247,7 +312,19 @@ export default class MainGame extends Phaser.Scene {
                 "bet.png"
             )
             .setOrigin(0, 0)
-            .setScale(0.4);
+            .setScale(0.5);
+
+        this.tutorSprite = this.add
+            .sprite(
+                this.spinBtn.x - 10,
+                this.spinBtn.y - 90,
+                "items",
+                "tutor_hand.png"
+            )
+            .setOrigin(0.5, 0)
+            .setAngle(180)
+            .setScale(0.6)
+            .setVisible(false);
 
         this.betContainer = this.add.container();
         //this.betCount = this.createRouletteCounter(0,0, 0.22, 0, 0, 0);
@@ -257,20 +334,21 @@ export default class MainGame extends Phaser.Scene {
         this.betContainer.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + 55;
 
         this.uiContainer.add(this.spinBtn);
-        this.uiContainer.add(this.betBtn);     
+        this.uiContainer.add(this.betBtn);
         this.uiContainer.add(this.betContainer);
         this.uiContainer.add(this.cashoutBtn);
-        
+        this.uiContainer.add(this.tutorSprite);
+
         this.betContainer.add(this.betCount);
 
         this.pushSprite = this.add
-            .sprite(this.scale.width / 2, -200, "items", PUSH_NAMES[0])
+            .sprite(this.scale.width / 2, -500, "items", PUSH_NAMES[0])
             .setOrigin(0.5, 0)
             .setScale(1);
 
         this.bonusSprite = this.add
             .sprite(
-                (COLS * CELL_SIZE_W) / 2,
+                (COLS * CELL_SIZE_W) / 2 + GRID_OFFSET_X,
                 GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2,
                 "items",
                 BONUS_NAMES[0]
@@ -317,6 +395,60 @@ export default class MainGame extends Phaser.Scene {
 
         this.scale.on("resize", this.resizeGame, this);
         this.resizeGame();
+
+        this.time.delayedCall(1000, () => {
+            this.startTutorial(false);
+            if (this.isSoundEnable) {
+                if (!this.ambSound) this.ambSound = this.sound.add("ambient");
+                this.ambSound.play({
+                    loop: true,
+                });
+            }
+        });
+    }
+
+    stopTutorial() {
+        if (this.tutorTween) {
+            this.tutorTween.stop();
+        }
+
+        for (let i=0;i<this.gridTweens.length;i++)
+            this.gridTweens[i].stop();
+
+        this.tutorSprite.setVisible(false);
+    }
+
+    startTutorial(isCashout) {
+        if (this.tutorTween) {
+            this.tutorTween.stop();
+        }
+
+        this.tutorSprite.setVisible(true);
+        if (isCashout) {
+            this.tutorSprite.x = this.cashoutBtn.x - 10;
+            this.tutorSprite.y = this.cashoutBtn.y - 90;
+
+            this.tutorTween = this.tweens.add({
+                targets: this.tutorSprite,
+                y: this.cashoutBtn.y - 50,
+                duration: 700,
+                ease: "Linear",
+                yoyo: true,
+                repeat: -1,
+            });
+        } else {
+            this.tutorSprite.x = this.spinBtn.x - 10;
+            this.tutorSprite.y = this.spinBtn.y - 90;
+
+            this.tutorTween = this.tweens.add({
+                targets: this.tutorSprite,
+                y: this.spinBtn.y - 50,
+                duration: 700,
+                ease: "Linear",
+                yoyo: true,
+                repeat: -1,
+            });
+        }
     }
 
     startNewGame() {
@@ -351,6 +483,8 @@ export default class MainGame extends Phaser.Scene {
         ];
 
         this.grid = [[], [], [], [], []];
+
+        let tweenInd = 0;
 
         for (let l = 0; l < stepItemIds.length; l++)
             Phaser.Utils.Array.Shuffle(stepItemIds[l]);
@@ -396,16 +530,33 @@ export default class MainGame extends Phaser.Scene {
                         .sprite(offsetX, offsetY, "items", frameName)
                         .setScale(0.3);
                     this.tapeContainer.add(sprite);
+
+                    if (k > TAPE_STEP_ITEMS_COUNT - 5 && j == 5) {
+                        this.gridTweens[tweenInd] = this.tweens.add({
+                            targets: sprite,
+                            scale: 0.35,
+                            duration: 700,
+                            ease: "Power2",
+                            yoyo: true,
+                            repeat: -1,
+                        });
+                        tweenInd++;
+                    }
                 }
 
-        //console.log(this.grid);
     }
 
     resetGame() {
         this.isMoving = true;
         this.isProcessing = true;
 
-        console.log(this.gameStep);
+        
+
+        if (this.gameStep == 4) {
+            if (this.isSoundEnable) this.sound.play("lose");
+        } else {
+            if (this.isSoundEnable) this.sound.play("win");
+        }
 
         const targetY =
             this.tapeContainer.y + TAPE_STEP_ITEMS_COUNT * CELL_SIZE;
@@ -426,19 +577,25 @@ export default class MainGame extends Phaser.Scene {
     checkMatches() {
         if (this.isProcessing) return;
 
-        console.log(this.gameStep, this.grid[this.gameStep - 1]);
+        
 
         this.grid[this.gameStep - 1].forEach((sym, index) => {
             const row = Math.floor(index / 4);
             const col = index % 4;
 
-            if (this.gameStep == 1 && sym == 1 || this.gameStep == 3 && (sym == 4 || sym >5) || this.gameStep == 5 && sym >5) {
-                const effect = this.add.sprite(
-                    GRID_OFFSET_X + CELL_SIZE_W * row+12,
-                    GRID_OFFSET_Y + CELL_SIZE * col,
-                    "items",
-                    "frame/1.png"
-                ).setOrigin(0,0);
+            if (
+                (this.gameStep == 1 && sym == 1) ||
+                (this.gameStep == 3 && (sym == 4 || sym > 5)) ||
+                (this.gameStep == 5 && sym > 5)
+            ) {
+                const effect = this.add
+                    .sprite(
+                        GRID_OFFSET_X + CELL_SIZE_W * row + 12,
+                        GRID_OFFSET_Y + CELL_SIZE * col,
+                        "items",
+                        "frame/1.png"
+                    )
+                    .setOrigin(0, 0);
                 effect.setScale(0.35);
 
                 effect.play("frame_gem");
@@ -449,12 +606,14 @@ export default class MainGame extends Phaser.Scene {
                 });
 
                 this.time.delayedCall(400, () => {
-                    const effectBoom = this.add.sprite(
-                        GRID_OFFSET_X + CELL_SIZE_W * row+10,
-                        GRID_OFFSET_Y + CELL_SIZE * col,
-                        "items",
-                        "splash/1.png"
-                    ).setOrigin(0,0);;
+                    const effectBoom = this.add
+                        .sprite(
+                            GRID_OFFSET_X + CELL_SIZE_W * row + 10,
+                            GRID_OFFSET_Y + CELL_SIZE * col,
+                            "items",
+                            "splash/1.png"
+                        )
+                        .setOrigin(0, 0);
                     effectBoom.setScale(0.35);
                     effectBoom.play("boom_gem");
                     this.gameContainer.add(effectBoom);
@@ -466,14 +625,40 @@ export default class MainGame extends Phaser.Scene {
             }
         });
 
+        this.time.delayedCall(2000, () => {
+            if (this.gameStep < 5) this.startTutorial(false);
+            else this.startTutorial(true);
+        });
+
         this.startPushes();
     }
 
-    update(time: number, dt: number) {}
+    update() {}
 
     startPushes() {
-        if (BONUS_NAMES[this.gameStep-1]) {
-            this.bonusSprite.setTexture("items", BONUS_NAMES[this.gameStep-1]);
+        let scaleX = 1;
+        let scaleY = 1;
+        let scrX = 0;
+        let scrY = 0;
+
+        if (window.innerWidth > window.innerHeight) {
+            scaleX = window.innerHeight / window.innerWidth;
+            scrX = 800 * (1 - scaleX);
+        } else {
+            scaleY = window.innerWidth / window.innerHeight;
+            scrY = 800 * (1 - scaleY);
+        }
+
+        const pushScale =
+            window.innerWidth > window.innerHeight
+                ? this.scale.width / 1200
+                : this.scale.width / 800;
+
+        if (BONUS_NAMES[this.gameStep - 1]) {
+            this.bonusSprite.setTexture(
+                "items",
+                BONUS_NAMES[this.gameStep - 1]
+            );
             this.bonusSprite.setScale(0);
 
             this.tweens.add({
@@ -488,17 +673,10 @@ export default class MainGame extends Phaser.Scene {
             });
         }
 
-        if (PUSH_NAMES[this.gameStep-1]) {
-            this.pushSprite.setTexture("items", PUSH_NAMES[this.gameStep-1]);
+        if (PUSH_NAMES[this.gameStep - 1]) {
+            this.pushSprite.setTexture("items", PUSH_NAMES[this.gameStep - 1]);
 
-            const pushScale =
-                this.scale.width > this.scale.height
-                    ? this.scale.width / 2400
-                    : this.scale.width / 1200;
-
-            console.log(pushScale);
-
-            this.pushSprite.setScale(pushScale);
+            this.pushSprite.setScale(pushScale * scaleX, pushScale * scaleY);
 
             this.tweens.add({
                 targets: this.pushSprite,
@@ -507,7 +685,7 @@ export default class MainGame extends Phaser.Scene {
                 ease: "Power2",
                 onComplete: () => {
                     this.time.delayedCall(1000, () => {
-                        this.pushSprite.y = -200;
+                        this.pushSprite.y = -1000;
                     });
                 },
             });
@@ -518,7 +696,7 @@ export default class MainGame extends Phaser.Scene {
             0,
             0,
             0.22,
-            BET_COUNT[this.gameStep-1],
+            BET_COUNT[this.gameStep - 1],
             BET_COUNT[this.gameStep],
             500
         );
@@ -526,7 +704,27 @@ export default class MainGame extends Phaser.Scene {
     }
 
     startEndScreen() {
-        this.bg.setTexture("endbg");
+        this.joker1.destroy();
+
+        let scaleX = 1;
+        let scaleY = 1;
+        let scrX = 0;
+        let scrY = 0;
+
+        this.spinBtn.x  = 6000;
+        this.cashoutBtn.x = 6000;
+        this.tutorSprite.x = 6000;
+
+        if (window.innerWidth > window.innerHeight) {
+            scaleX = window.innerHeight / window.innerWidth;
+            scrX = 800 * (1 - scaleX);
+        } else {
+            scaleY = window.innerWidth / window.innerHeight;
+            scrY = 800 * (1 - scaleY);
+        }
+
+        this.stopTutorial();
+        this.frameGlow.setVisible(false);
         this.betBtn.setVisible(false);
         this.betContainer.setVisible(false);
         this.spinBtn.setVisible(false);
@@ -537,43 +735,142 @@ export default class MainGame extends Phaser.Scene {
 
         this.endEffect = this.add
             .sprite(
-                (COLS * CELL_SIZE_W) / 2,
-                GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2 ,
+                (COLS * CELL_SIZE_W) / 2 + GRID_OFFSET_X,
+                GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2,
                 "endeffect"
             )
             .setOrigin(0.5, 1)
             .setScale(0.7);
         this.uiContainer.add(this.endEffect);
 
+        this.tweens.add({
+            targets: this.endEffect,
+            alpha: 0.5,
+            duration: 1000,
+            ease: "Power2",
+            yoyo: true,
+            repeat: -1,
+        });
+
+        this.joker1 = this.add
+            .sprite(
+                (COLS * CELL_SIZE_W) / 2 + GRID_OFFSET_X - 250,
+                GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2 - 50,
+                "joker"
+            )
+            .setOrigin(0.5, 0.5)
+            .setScale(window.innerWidth > window.innerHeight ? 0.45 : 0.6);
+
+        this.uiContainer.add(this.joker1);
+
+        this.joker2 = this.add
+            .sprite(
+                (COLS * CELL_SIZE_W) / 2 + GRID_OFFSET_X + 250,
+                GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2 - 50,
+                "joker"
+            )
+            .setOrigin(0.5, 0.5)
+            .setFlipX(true)
+            .setScale(window.innerWidth > window.innerHeight ? 0.45 : 0.6);
+
+        this.uiContainer.add(this.joker2);
+
+        this.tweens.add({
+            targets: this.joker1,
+            scale: (window.innerWidth > window.innerHeight ? 0.45 : 0.6) * 1.05,
+            duration: 1000,
+            ease: "Power2",
+            yoyo: true,
+            repeat: -1,
+        });
+
+        this.tweens.add({
+            targets: this.joker2,
+            scale: (window.innerWidth > window.innerHeight ? 0.45 : 0.6) * 1.05,
+            duration: 1000,
+            ease: "Power2",
+            yoyo: true,
+            repeat: -1,
+        });
+
         this.endSprite = this.add
             .sprite(
-                (COLS * CELL_SIZE_W) / 2,
+                (COLS * CELL_SIZE_W) / 2 + GRID_OFFSET_X,
                 GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2,
                 "endbtn"
             )
             .setOrigin(0.5, 0.5)
-            .setScale(0.5);
+            .setScale(window.innerWidth > window.innerHeight ? 0.45 : 0.6)
+            .setInteractive()
+            .on("pointerdown", (pointer) => {
+                console.log("CTA pressed");
+                //onCtaPressed();
+                FbPlayableAd.onCTAClick();
+            });
+
         this.uiContainer.add(this.endSprite);
+
+        if (this.gameStep > 4) {
+            if (this.isSoundEnable) this.sound.play("end");
+        }
+
+        if (this.gameStep > 4) {
+            this.pushSprite.setTexture("items", "push5620.png");
+
+            const pushScale =
+                this.scale.width > this.scale.height
+                    ? this.scale.width / 1200
+                    : this.scale.width / 800;
+
+            this.pushSprite.setScale(pushScale * scaleX, pushScale * scaleY);
+
+            this.tweens.add({
+                targets: this.pushSprite,
+                y: 50 * pushScale,
+                duration: 700,
+                ease: "Power2",
+                onComplete: () => {
+                    this.time.delayedCall(1000, () => {
+                        this.pushSprite.y = -1000;
+                    });
+                },
+            });
+        }
     }
 
     resizeGame() {
+        let scaleX = 1;
+        let scaleY = 1;
+        let scrX = 0;
+        let scrY = 0;
+
+        let offsetX =
+            window.innerWidth > window.innerHeight ? 0 : GRID_OFFSET_X;
+
+        if (window.innerWidth > window.innerHeight) {
+            scaleX = window.innerHeight / window.innerWidth;
+            scrX = 800 * (1 - scaleX);
+        } else {
+            scaleY = window.innerWidth / window.innerHeight;
+            scrY = 800 * (1 - scaleY);
+        }
+
         this.bgScale =
-            this.scale.width > this.scale.height
-                ? this.scale.width / 2048
-                : this.scale.height / 2048;
+            window.innerWidth > window.innerHeight
+                ? this.scale.width / 1024
+                : this.scale.height / 1024;
 
         this.bgItemScale = this.scale.height / 1400;
 
         this.fieldScale =
-            this.scale.width < this.scale.height
-                ? this.scale.width /
-                  (GRID_OFFSET_X * 2 + CELL_SIZE_W * COLS + 200)
+            window.innerWidth < window.innerHeight
+                ? this.scale.width / (offsetX * 2 + CELL_SIZE_W * COLS + 100)
                 : this.scale.height /
-                  (GRID_OFFSET_Y * 2 + CELL_SIZE * ROWS + 250);
+                  (GRID_OFFSET_Y * 2 + CELL_SIZE * ROWS + 200);
 
         this.shiftX =
             (this.scale.width -
-                this.fieldScale * (GRID_OFFSET_X * 2 + CELL_SIZE_W * COLS)) /
+                this.fieldScale * (offsetX * 2 + CELL_SIZE_W * COLS)) /
             2;
         this.shiftY =
             (this.scale.height -
@@ -581,49 +878,105 @@ export default class MainGame extends Phaser.Scene {
                 2 -
             20;
 
-        this.gameBackContainer.setScale(this.fieldScale);
-        this.gameContainer.setScale(this.fieldScale);
-        this.uiContainer.setScale(this.fieldScale);
-        this.maskGraphics.setScale(this.fieldScale);
-        this.gameBackContainer.x = this.shiftX;
-        this.gameContainer.x = this.shiftX;
-        this.uiContainer.x = this.shiftX;
-        this.maskGraphics.x = this.shiftX;
-        this.gameBackContainer.y = this.shiftY;
-        this.gameContainer.y = this.shiftY;
-        this.uiContainer.y = this.shiftY;
-        this.maskGraphics.y = this.shiftY;
+        //this.gameBackContainer.setScale(this.fieldScale);
+        //this.gameContainer.setScale(this.fieldScale);
+        //this.uiContainer.setScale(this.fieldScale);
+        //this.maskGraphics.setScale(this.fieldScale);
+        //this.gameBackContainer.x = this.shiftX;
+        //this.gameContainer.x = this.shiftX;
+        //this.uiContainer.x = this.shiftX;
+        //this.maskGraphics.x = this.shiftX;
+        //this.gameBackContainer.y = this.shiftY;
+        //this.gameContainer.y = this.shiftY;
+        //this.uiContainer.y = this.shiftY;
+        //this.maskGraphics.y = this.shiftY;
 
-        this.bg.setScale(this.bgScale);
+        this.soundBtn.y = this.scale.height - 50;
+        this.soundBtn.setScale(
+            0.42 * this.fieldScale * scaleX,
+            0.42 * this.fieldScale * scaleY
+        );
+
+        this.gameBackContainer.setScale(
+            this.fieldScale * scaleX,
+            this.fieldScale * scaleY
+        );
+        this.gameContainer.setScale(
+            this.fieldScale * scaleX,
+            this.fieldScale * scaleY
+        );
+        this.uiContainer.setScale(
+            this.fieldScale * scaleX,
+            this.fieldScale * scaleY
+        );
+        this.maskGraphics.setScale(
+            this.fieldScale * scaleX,
+            this.fieldScale * scaleY
+        );
+        this.gameBackContainer.x =
+            this.shiftX + scrX - 2 * (GRID_OFFSET_X - offsetX);
+        this.gameContainer.x =
+            this.shiftX + scrX - 2 * (GRID_OFFSET_X - offsetX);
+        this.uiContainer.x = this.shiftX + scrX - 2 * (GRID_OFFSET_X - offsetX);
+        this.maskGraphics.x =
+            this.shiftX + scrX - 2 * (GRID_OFFSET_X - offsetX);
+
+        const dY = 60;
+        this.gameBackContainer.y = this.shiftY + scrY - dY;
+        this.gameContainer.y = this.shiftY + scrY - dY;
+        this.uiContainer.y = this.shiftY + scrY - dY;
+        this.maskGraphics.y = this.shiftY + scrY - dY;
+
+        const scaleBg = scaleX > scaleY ? scaleX / scaleY : scaleY / scaleX;
+
+        this.bg.setScale(
+            this.bgScale * scaleX * scaleBg,
+            this.bgScale * scaleY * scaleBg
+        );
         this.bg.x = this.scale.width / 2;
         this.bg.y = this.scale.height / 2;
 
-        if (this.scale.width > this.scale.height) {
+        if (window.innerWidth > window.innerHeight) {
             (this.cashoutBtn.x =
                 GRID_OFFSET_X + ((COLS + 1) * CELL_SIZE_W) / 2),
                 (this.cashoutBtn.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + 66),
+                (this.betBtn.x = GRID_OFFSET_X);
+            (this.betBtn.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + 20),
                 (this.spinBtn.x =
                     GRID_OFFSET_X + COLS * CELL_SIZE_W - CELL_SIZE_W / 2);
             this.spinBtn.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + CELL_SIZE / 2;
             this.spinBtn.setOrigin(0.5, 0.5);
-
+            this.betBtn.setOrigin(0, 0);
             this.cashoutBtn.setOrigin(0.5, 0.5);
             this.cashoutBtn.setScale(0.45);
+            this.betBtn.setScale(0.4);
             this.betContainer.setScale(1);
             this.betContainer.x = GRID_OFFSET_X + 118;
             this.betContainer.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + 55;
+
+            this.joker1.x = COLS * CELL_SIZE_W + GRID_OFFSET_X - 10;
+            this.joker1.y = GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2;
+            this.joker1.setOrigin(0, 0.5);
+            this.joker1.setScale(0.6);
         } else {
             this.cashoutBtn.x = GRID_OFFSET_X + (3 * COLS * CELL_SIZE_W) / 4;
             this.cashoutBtn.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + 80;
-
-            this.spinBtn.x = GRID_OFFSET_X + (COLS * CELL_SIZE_W) / 2;
+            this.betBtn.x = GRID_OFFSET_X + (COLS * CELL_SIZE_W) / 4;
+            (this.betBtn.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + 80),
+                (this.spinBtn.x = GRID_OFFSET_X + (COLS * CELL_SIZE_W) / 2);
             this.spinBtn.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + CELL_SIZE * 2;
             this.spinBtn.setOrigin(0.5, 0);
+            this.betBtn.setOrigin(0.5, 0.5);
             this.cashoutBtn.setOrigin(0.5, 0.5);
             this.cashoutBtn.setScale(0.55);
+            this.betBtn.setScale(0.55);
             this.betContainer.setScale(50 / 40);
             this.betContainer.x = GRID_OFFSET_X + 185;
             this.betContainer.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + 65;
+            this.joker1.x = COLS * CELL_SIZE_W + GRID_OFFSET_X;
+            this.joker1.y = GRID_OFFSET_Y;
+            this.joker1.setOrigin(1, 1);
+            this.joker1.setScale(0.6);
         }
     }
 
@@ -658,12 +1011,12 @@ export default class MainGame extends Phaser.Scene {
 
             let offsetX = 0;
 
-            let frameName = "nums/$.png";
+            let frameName = "nums/e.png";
             const sprite = self.add
                 .sprite(offsetX, 0, atlasKey, frameName)
-                .setScale(0.8);
+                .setScale(0.9);
             container.add(sprite);
-            offsetX += spacing;
+            offsetX += spacing * 1.1;
 
             for (let char of str) {
                 if (char === " ") continue;

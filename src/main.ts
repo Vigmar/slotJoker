@@ -4,14 +4,14 @@ import MainGame from './Game'
 
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 800,
+    width: 1920,
+    height: 1920,
 	parent: 'phaser-example',
 	backgroundColor: '#ffffff',
     scene: [MainGame],
 	scale: {
-		mode: Phaser.Scale.RESIZE,  
-        autoCenter: Phaser.Scale.CENTER_BOTH,
+		mode: Phaser.Scale.SHOW_ALL,  
+        
         
 	}   
 }
