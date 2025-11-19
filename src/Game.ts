@@ -56,6 +56,8 @@ export default class MainGame extends Phaser.Scene {
     cashoutBtn = null;
     spinBtn = null;
     startSprite = null;
+    startAnim = null;
+    startBtn = null;
     wonSprite = null;
 
     downloadBtn = null;
@@ -63,8 +65,10 @@ export default class MainGame extends Phaser.Scene {
 
     bonusSprite = null;
     logoSprite = null;
+    logomanSprite = null;
 
     endSprite = null;
+    endBtn = null;
     endCoin1 = null;
     endCoin2 = null;
 
@@ -86,10 +90,10 @@ export default class MainGame extends Phaser.Scene {
 
     preload() {
         this.load.atlas("items", "assets/bb1.png", "assets/bb1.json");
+        this.load.atlas("anims", "assets/anim.png", "assets/anim.json");
 
-        this.load.image("start", "assets/start.png");
+        //this.load.image("start", "assets/startlogo.png");
         this.load.image("endbg", "assets/background.jpg");
-        this.load.image("endbtn", "assets/endbtn.png");
         this.load.image("endcoin1", "assets/endcoin1.png");
         this.load.image("endcoin2", "assets/endcoin2.png");
         this.load.image("superwin", "assets/superwin.png");
@@ -108,12 +112,10 @@ export default class MainGame extends Phaser.Scene {
         this.maskGraphics.fillStyle(0xffffff, 1);
         this.maskGraphics.fillRect(maskX, maskY, maskWidth, maskHeight);
 
-        
         const mask = new Phaser.Display.Masks.GeometryMask(
             this,
             this.maskGraphics
         );
-        
 
         this.maskGraphics.setVisible(false); // саму маску не рисуем
 
@@ -279,19 +281,22 @@ export default class MainGame extends Phaser.Scene {
             .setOrigin(0.5, 0.5)
             .setScale(0);
 
-        
-
         this.logoSprite = this.add
-            .sprite(
-                (COLS * CELL_SIZE_W) / 2 + GRID_OFFSET_X,
-                5,
-                "logo",
-            )
+            .sprite((COLS * CELL_SIZE_W) / 2 + GRID_OFFSET_X, 5, "logo")
             .setOrigin(0.5, 0)
             .setScale(0.3);
 
+        this.logomanSprite = this.add
+            .sprite((COLS * CELL_SIZE_W) / 2 + GRID_OFFSET_X, 45, "anims","1.png")
+            .setOrigin(0.5, 1)
+            .setScale(0.3);
+
+        this.uiContainer.add(this.logomanSprite);
         this.uiContainer.add(this.logoSprite);
+        
         this.uiContainer.add(this.bonusSprite);
+
+        if (window.innerWidth>window.innerHeight) this.logomanSprite.setVisible(false);
 
         this.anims.create({
             key: "frame_gem",
@@ -326,6 +331,34 @@ export default class MainGame extends Phaser.Scene {
             frameRate: 15,
         });
 
+        this.anims.create({
+            key: "man_start",
+            frames: [
+                { key: "anims", frame: "001.png" },
+                { key: "anims", frame: "002.png" },
+                { key: "anims", frame: "003.png" },
+                { key: "anims", frame: "004.png" },
+                { key: "anims", frame: "005.png" },
+                { key: "anims", frame: "006.png" },
+            ],
+            frameRate: 6,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: "man_end",
+            frames: [
+                { key: "anims", frame: "1.png" },
+                { key: "anims", frame: "2.png" },
+                { key: "anims", frame: "3.png" },
+                { key: "anims", frame: "4.png" },
+                { key: "anims", frame: "5.png" },
+                { key: "anims", frame: "6.png" },
+            ],
+            frameRate: 6,
+            repeat: -1,
+        });
+
         this.initDrums();
 
         this.scale.on("resize", this.resizeGame, this);
@@ -337,6 +370,7 @@ export default class MainGame extends Phaser.Scene {
         this.spinBtn.setVisible(false);
         this.cashoutBtn.setVisible(false);
         this.logoSprite.setVisible(false);
+        this.logomanSprite.setVisible(false);
 
         this.time.delayedCall(1000, () => {
             //this.startTutorial(false);
@@ -350,31 +384,57 @@ export default class MainGame extends Phaser.Scene {
 
         this.startSprite = this.add
             .sprite(
-                GRID_OFFSET_X + COLS * CELL_SIZE_W / 2,
-                GRID_OFFSET_Y + ROWS * CELL_SIZE / 2,
-                "start",
+                GRID_OFFSET_X + (COLS * CELL_SIZE_W) / 2,
+                10,
+                "anims",
+                "start_b.png"
             )
-            .setScale(0.4)
+            .setOrigin(0.5, 0)
+            .setScale(0.4);
+            
+
+        this.startAnim = this.add
+            .sprite(
+                GRID_OFFSET_X + (COLS * CELL_SIZE_W) / 2,
+                GRID_OFFSET_Y+ROWS*CELL_SIZE/2,
+                "anims",
+                "001.png"
+            ).setScale(1.3);
+            
+
+            this.startAnim.play("man_start");
+
+        this.startBtn = this.add
+            .sprite(
+                GRID_OFFSET_X + (COLS * CELL_SIZE_W) / 2,
+                GRID_OFFSET_Y+ROWS*CELL_SIZE+200,
+                "anims",
+                "start_a.png"
+            )
+            .setOrigin(0.5, 1)
+            .setScale(0.8)
             .setInteractive()
             .on("pointerdown", () => {
                 this.startGame();
             });
 
+        this.uiContainer.add(this.startAnim);
         this.uiContainer.add(this.startSprite);
-
+        this.uiContainer.add(this.startBtn);
     }
 
-    startGame()
-    {
+    startGame() {
         this.startSprite.setVisible(false);
+        this.startAnim.setVisible(false);
+        this.startBtn.setVisible(false);
         this.gameBackContainer.setVisible(true);
         this.gameContainer.setVisible(true);
         this.backContainer.setVisible(true);
         this.spinBtn.setVisible(true);
         this.cashoutBtn.setVisible(true);
         this.logoSprite.setVisible(true);
+        if (window.innerWidth<window.innerHeight) this.logomanSprite.setVisible(true);
         this.startTutorial(false);
-
     }
 
     stopTutorial() {
@@ -430,15 +490,17 @@ export default class MainGame extends Phaser.Scene {
 
     initDrums() {
         const stepItemIds = [
-            [0, 0, 0, 1, 1, 1, 3, 3, 3, 13, 13, 13, 12, 12, 12, 11, 11, 11, 7,7],
+            [
+                0, 0, 0, 1, 1, 1, 3, 3, 3, 13, 13, 13, 12, 12, 12, 11, 11, 11,
+                7, 7,
+            ],
             [0, 0, 0, 1, 1, 1, 3, 3, 3, 4, 4, 4, 12, 13, 12, 11, 13, 11, 7],
-            [0, 0, 0, 1, 4, 0, 12, 3, 11, 13, 13, 13, 12, 12, 12, 11, 14, 10, 11,12],
             [
-                6,6,6,6,6,2,0,0,0,1,1,1,3,3,3
+                0, 0, 0, 1, 4, 0, 12, 3, 11, 13, 13, 13, 12, 12, 12, 11, 14, 10,
+                11, 12,
             ],
-            [
-                6, 6, 6, 6, 3, 3, 3, 2, 1, 1, 0, 12, 13, 14, 5
-            ],
+            [6, 6, 6, 6, 6, 2, 0, 0, 0, 1, 1, 1, 3, 3, 3],
+            [6, 6, 6, 6, 3, 3, 3, 2, 1, 1, 0, 12, 13, 14, 5],
         ];
 
         this.grid = [[], [], [], [], []];
@@ -448,67 +510,72 @@ export default class MainGame extends Phaser.Scene {
         for (let l = 0; l < stepItemIds.length; l++)
             Phaser.Utils.Array.Shuffle(stepItemIds[l]);
 
+        let fishId = 5 + Math.floor(Math.random() * 3);
 
-        let fishId = 5+Math.floor(Math.random()*3);
+        for (let i = 0; i < 5; i++) {
+            // 5 колонок
+            for (let j = 0; j < 6; j++) {
+                // 6 шагов
+                for (let k = 0; k < TAPE_STEP_ITEMS_COUNT; k++) {
+                    // 5 объектов в шаге
+                    const offsetX =
+                        GRID_OFFSET_X +
+                        i * (CELL_SIZE_W - 2) +
+                        CELL_SIZE_W / 2 +
+                        25;
 
-        for (let i = 0; i < 5; i++) { // 5 колонок
-    for (let j = 0; j < 6; j++) { // 6 шагов
-        for (let k = 0; k < TAPE_STEP_ITEMS_COUNT; k++) { // 5 объектов в шаге
-            const offsetX =
-                GRID_OFFSET_X +
-                i * (CELL_SIZE_W - 2) +
-                CELL_SIZE_W / 2 +
-                25;
+                    const offsetY =
+                        (j * TAPE_STEP_ITEMS_COUNT + k) * CELL_SIZE -
+                        TAPE_STEP_ITEMS_COUNT * 6 * CELL_SIZE +
+                        CELL_SIZE * 5 -
+                        30;
 
-            const offsetY =
-                (j * TAPE_STEP_ITEMS_COUNT + k) * CELL_SIZE -
-                TAPE_STEP_ITEMS_COUNT * 6 * CELL_SIZE+CELL_SIZE*5-30 ;
-                
+                    let frameId = Phaser.Math.Between(0, SYMBOL_TYPES - 1);
 
-            let frameId = Phaser.Math.Between(0, SYMBOL_TYPES - 1);
+                    // Если это один из 3 нижних элементов в шаге (k >= 2)
+                    if (k >= TAPE_STEP_ITEMS_COUNT - 3) {
+                        // Индекс в grid (шаги идут сверху вниз, поэтому инвертируем j)
+                        const gridRow = 5 - j - 1; // 5 шагов: 0..5 → 5..0
+                        const gridCol =
+                            i * 3 + (k - (TAPE_STEP_ITEMS_COUNT - 3)); // 3 элемента в строке: 0,1,2
 
-            // Если это один из 3 нижних элементов в шаге (k >= 2)
-            if (k >= TAPE_STEP_ITEMS_COUNT - 3) {
-                // Индекс в grid (шаги идут сверху вниз, поэтому инвертируем j)
-                const gridRow = 5 - j - 1; // 5 шагов: 0..5 → 5..0
-                const gridCol = i * 3 + (k - (TAPE_STEP_ITEMS_COUNT - 3)); // 3 элемента в строке: 0,1,2
+                        if (j < 5) {
+                            // не последний шаг
+                            let currIds = stepItemIds[gridRow];
+                            frameId = currIds[gridCol];
 
-                if (j < 5) { // не последний шаг
-                    let currIds = stepItemIds[gridRow];
-                    frameId = currIds[gridCol];
-                    
-                    
-                    if (j == 2 && (gridCol ==4 || gridCol ==7 || gridCol == 10))
-                    {
-                        frameId = fishId;
+                            if (
+                                j == 2 &&
+                                (gridCol == 4 || gridCol == 7 || gridCol == 10)
+                            ) {
+                                frameId = fishId;
+                            }
+
+                            this.grid[gridRow][gridCol] = frameId;
+                        }
                     }
 
-                    this.grid[gridRow][gridCol] = frameId;
+                    const frameName = "cells/" + ITEM_NAMES[frameId];
+                    const sprite = this.add
+                        .sprite(offsetX, offsetY, "items", frameName)
+                        .setScale(0.3);
+                    this.tapeContainer.add(sprite);
+
+                    // Анимация для последнего шага (j === 5) и нижних 3 элементов
+                    if (k >= TAPE_STEP_ITEMS_COUNT - 3 && j === 5) {
+                        this.gridTweens[tweenInd] = this.tweens.add({
+                            targets: sprite,
+                            scale: 0.35,
+                            duration: 700,
+                            ease: "Power2",
+                            yoyo: true,
+                            repeat: -1,
+                        });
+                        tweenInd++;
+                    }
                 }
             }
-
-            const frameName = "cells/" + ITEM_NAMES[frameId];
-            const sprite = this.add
-                .sprite(offsetX, offsetY, "items", frameName)
-                .setScale(0.3);
-            this.tapeContainer.add(sprite);
-
-            // Анимация для последнего шага (j === 5) и нижних 3 элементов
-            if (k >= TAPE_STEP_ITEMS_COUNT - 3 && j === 5) {
-                this.gridTweens[tweenInd] = this.tweens.add({
-                    targets: sprite,
-                    scale: 0.35,
-                    duration: 700,
-                    ease: "Power2",
-                    yoyo: true,
-                    repeat: -1,
-                });
-                tweenInd++;
-            }
         }
-    }
-}
-            
 
         console.log(this.grid[0].length);
     }
@@ -544,16 +611,14 @@ export default class MainGame extends Phaser.Scene {
     checkMatches() {
         if (this.isProcessing) return;
 
-
         this.grid[this.gameStep - 1].forEach((sym, index) => {
             const row = Math.floor(index / 3);
             const col = index % 3;
 
-            
             if (
-                (this.gameStep == 3 && col ==1 && (row>0 && row<4)) ||
-                (this.gameStep == 4 && (sym == 6 || sym ==2)) ||
-                (this.gameStep == 5 && (sym == 6 || sym ==2 || sym ==3))
+                (this.gameStep == 3 && col == 1 && row > 0 && row < 4) ||
+                (this.gameStep == 4 && (sym == 6 || sym == 2)) ||
+                (this.gameStep == 5 && (sym == 6 || sym == 2 || sym == 3))
             ) {
                 const effect = this.add
                     .sprite(
@@ -685,6 +750,8 @@ export default class MainGame extends Phaser.Scene {
         let scrX = 0;
         let scrY = 0;
 
+        this.logoSprite.setVisible(false);
+        this.logomanSprite.setVisible(false);
         this.tutorSprite.x = 6000;
 
         if (window.innerWidth > window.innerHeight) {
@@ -706,10 +773,11 @@ export default class MainGame extends Phaser.Scene {
             .sprite(
                 (COLS * CELL_SIZE_W) / 2 + GRID_OFFSET_X,
                 GRID_OFFSET_Y + (ROWS * CELL_SIZE) / 2,
-                "endbtn"
+                "anims",
+                "1.png"
             )
             .setOrigin(0.5, 0.5)
-            .setScale(window.innerWidth > window.innerHeight ? 0.45 : 0.6)
+            .setScale(0.75)
             .setInteractive()
             .on("pointerdown", (pointer) => {
                 console.log("CTA pressed");
@@ -717,6 +785,7 @@ export default class MainGame extends Phaser.Scene {
                 FbPlayableAd.onCTAClick();
             });
 
+        this.endSprite.play("man_end");
 
         this.endCoin1 = this.add
             .sprite(
@@ -735,29 +804,45 @@ export default class MainGame extends Phaser.Scene {
             )
             .setOrigin(0.5, 0.5)
             .setScale(window.innerWidth > window.innerHeight ? 0.45 : 0.6);
-            
+
+        this.endBtn = this.add
+            .sprite(
+                (COLS * CELL_SIZE_W) / 2 + GRID_OFFSET_X,
+                GRID_OFFSET_Y + (ROWS * CELL_SIZE)+30,
+                "items",
+                "cashout.png"
+            )
+            .setOrigin(0.5, 0)
+            .setScale(0.75)
+            .setInteractive()
+            .on("pointerdown", (pointer) => {
+                console.log("CTA pressed");
+                //onCtaPressed();
+                FbPlayableAd.onCTAClick();
+            });
 
         this.uiContainer.add(this.endCoin1);
         this.uiContainer.add(this.endSprite);
         this.uiContainer.add(this.endCoin2);
+        this.uiContainer.add(this.endBtn);
 
         this.tweens.add({
-                targets: this.endCoin1,
-                y: this.endCoin1.y + 30,
-                duration: 1200,
-                ease: "Linear",
-                yoyo: true,
-                repeat: -1,
-            });
+            targets: this.endCoin1,
+            y: this.endCoin1.y + 30,
+            duration: 1200,
+            ease: "Linear",
+            yoyo: true,
+            repeat: -1,
+        });
 
         this.tweens.add({
-                targets: this.endCoin2,
-                y: this.endCoin2.y - 30,
-                duration: 1200,
-                ease: "Linear",
-                yoyo: true,
-                repeat: -1,
-            });
+            targets: this.endCoin2,
+            y: this.endCoin2.y - 30,
+            duration: 1200,
+            ease: "Linear",
+            yoyo: true,
+            repeat: -1,
+        });
 
         if (this.gameStep > 4) {
         }
@@ -861,8 +946,8 @@ export default class MainGame extends Phaser.Scene {
         this.bg.x = this.scale.width / 2;
         this.bg.y = this.scale.height / 2;
 
-        //if (window.innerWidth > window.innerHeight) 
-            {
+        //if (window.innerWidth > window.innerHeight)
+        {
             (this.cashoutBtn.x =
                 GRID_OFFSET_X + ((COLS + 1) * CELL_SIZE_W) / 3),
                 (this.cashoutBtn.y = GRID_OFFSET_Y + ROWS * CELL_SIZE + 66),
@@ -872,7 +957,7 @@ export default class MainGame extends Phaser.Scene {
             this.spinBtn.setOrigin(0.5, 0.5);
             this.cashoutBtn.setOrigin(0.5, 0.5);
             this.cashoutBtn.setScale(0.45);
-        } 
+        }
         /*
         else {
             this.cashoutBtn.x = GRID_OFFSET_X + (1 * COLS * CELL_SIZE_W) / 4;
