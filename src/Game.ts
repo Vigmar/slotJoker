@@ -106,10 +106,11 @@ export default class MainGame extends Phaser.Scene {
         this.resizeGame();
 
         this.startGame();
+    }
 
-        const S1X  = 75+(340-75)/2;
+    startGT1() {
+        const S1X = 75 + (340 - 75) / 2;
         const S2X = 340;
-        
 
         // Фаза 1: x и y параллельно
         const tweenX1 = this.tweens.add({
@@ -117,25 +118,24 @@ export default class MainGame extends Phaser.Scene {
             x: S1X,
             duration: 500,
             ease: "Linear",
-            onComplete: ()=>{
+            onComplete: () => {
+                this.tweens.add({
+                    targets: this.ballSprite,
+                    x: S2X,
+                    duration: 500,
+                    ease: "Linear",
+                });
 
                 this.tweens.add({
-                targets: this.ballSprite,
-                x: S2X,
-                duration: 500,
-                ease: "Linear",
-            });
-
-            this.tweens.add({
-                targets: this.ballSprite,
-                y: 230,
-                duration: 500,
-                ease: "Sine.In",
-                onComplete: ()=>{this.startGT2()}
-
-            });
-
-            }
+                    targets: this.ballSprite,
+                    y: 230,
+                    duration: 500,
+                    ease: "Sine.In",
+                    onComplete: () => {
+                        this.startGT2();
+                    },
+                });
+            },
         });
 
         const tweenY1 = this.tweens.add({
@@ -144,13 +144,9 @@ export default class MainGame extends Phaser.Scene {
             duration: 500,
             ease: "Sine.Out",
         });
-
-        
-
     }
 
     startGT2() {
-
         const S3X = 200;
         const S3Y = 410;
 
@@ -159,7 +155,9 @@ export default class MainGame extends Phaser.Scene {
             x: S3X,
             duration: 500,
             ease: "Linear",
-            onComplete: ()=>{ this.startGT3();}
+            onComplete: () => {
+                this.startGT3();
+            },
         });
 
         const tweenY1 = this.tweens.add({
@@ -168,11 +166,9 @@ export default class MainGame extends Phaser.Scene {
             duration: 500,
             ease: "Sine.In",
         });
-
     }
 
     startGT3() {
-
         const S3X = 275;
         const S3Y = 510;
 
@@ -181,7 +177,9 @@ export default class MainGame extends Phaser.Scene {
             x: S3X,
             duration: 500,
             ease: "Linear",
-            onComplete: ()=>{ this.startEndGT()}
+            onComplete: () => {
+                this.startEndGT();
+            },
         });
 
         const tweenY1 = this.tweens.add({
@@ -190,11 +188,9 @@ export default class MainGame extends Phaser.Scene {
             duration: 500,
             ease: "Sine.In",
         });
-
     }
 
     startEndGT() {
-
         const SX = 275;
         const SY = 510;
         const DX = 14;
@@ -202,68 +198,244 @@ export default class MainGame extends Phaser.Scene {
 
         const timeX = 150;
         const easeM = "Sine.InOut";
-        
 
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite,
-            x: SX-DX,
-            y: SY+DY,
+            x: SX - DX,
+            y: SY + DY,
             duration: timeX,
             ease: easeM,
-            onComplete: ()=>{ 
-
-            const tweenX2 = this.tweens.add({
-            targets: this.ballSprite,
-            x: SX,
-            y: SY+2*DY,
-            duration: timeX,
-            ease: easeM,
-            onComplete: ()=>{ 
-
-                const tweenX3 = this.tweens.add({
-                    targets: this.ballSprite,
-                    x: SX-DX,
-                    y: SY+3*DY,
-                    duration: timeX,
-                    ease: easeM,
-                    onComplete: ()=>{ 
-
-                        const tweenX4 = this.tweens.add({
+            onComplete: () => {
+                const tweenX2 = this.tweens.add({
                     targets: this.ballSprite,
                     x: SX,
-                    y: SY+4*DY+20,
+                    y: SY + 2 * DY,
                     duration: timeX,
                     ease: easeM,
-                    onComplete: ()=>{ 
-
-                        this.ballSprite.setVisible(false);
-                    }});
-
-
-                    }});
-
-
-                
-            }});
-
-
-            }
+                    onComplete: () => {
+                        const tweenX3 = this.tweens.add({
+                            targets: this.ballSprite,
+                            x: SX - DX,
+                            y: SY + 3 * DY,
+                            duration: timeX,
+                            ease: easeM,
+                            onComplete: () => {
+                                const tweenX4 = this.tweens.add({
+                                    targets: this.ballSprite,
+                                    x: SX,
+                                    y: SY + 4 * DY + 20,
+                                    duration: timeX,
+                                    ease: easeM,
+                                    onComplete: () => {
+                                        this.ballSprite.setVisible(false);
+                                    },
+                                });
+                            },
+                        });
+                    },
+                });
+            },
         });
-
     }
 
-    startGame() {}
+    startRT1() {
+        const S1X = 75 + (340 - 75) / 2;
+        const S2X = 340;
+
+        // Фаза 1: x и y параллельно
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite,
+            x: S1X,
+            duration: 500,
+            ease: "Linear",
+            onComplete: () => {
+                this.tweens.add({
+                    targets: this.ballSprite,
+                    x: S2X,
+                    duration: 500,
+                    ease: "Linear",
+                });
+
+                this.tweens.add({
+                    targets: this.ballSprite,
+                    y: 230,
+                    duration: 500,
+                    ease: "Sine.In",
+                    onComplete: () => {
+                        this.startRT2();
+                    },
+                });
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite,
+            y: 40,
+            duration: 500,
+            ease: "Sine.Out",
+        });
+    }
+
+    startRT2() {
+        const S3X = 200;
+        const S3Y = 410;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite,
+            x: S3X,
+            duration: 500,
+            ease: "Linear",
+            onComplete: () => {
+                this.startRT3();
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite,
+            y: S3Y,
+            duration: 500,
+            ease: "Sine.In",
+        });
+    }
+
+    startRT3() {
+        const S3X = 275;
+        const S3Y = 510;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite,
+            x: S3X,
+            duration: 500,
+            ease: "Linear",
+            onComplete: () => {
+                this.startERT1();
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite,
+            y: S3Y,
+            duration: 500,
+            ease: "Sine.In",
+        });
+    }
+
+    startERT1() {
+        const S3X = 275;
+        const S3Y = 510;
+
+        this.ballSprite.x = S3X;
+        this.ballSprite.y = S3Y;
+
+        const SX = 275;
+        const SY = 510;
+        const DX = 14;
+        const DY = 35;
+        const timeX = 150;
+        const easeM = "Sine.InOut";
+
+        this.tweens.chain({
+            targets: this.ballSprite,
+            tweens: [
+                { x: SX + 30, y: SY - 20, duration: timeX, ease: easeM },
+                { x: SX + 18, y: SY + 40, duration: timeX * 1.1, ease: easeM },
+            ],
+            onComplete: () => {
+                //   this.ballSprite.setVisible(false);
+                this.startERT2();
+            },
+        });
+    }
+
+    startERT2() {
+        const easeM = "Sine.InOut";
+
+        const timeX = 250;
+
+        const S3X = 374;
+        const S3Y = 586;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite,
+            x: S3X,
+            duration: timeX,
+            ease: "Linear",
+            onComplete: () => {
+                this.startERT3();
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite,
+            y: S3Y,
+            duration: timeX,
+            ease: "Cubic.In",
+        });
+    }
+
+    startERT3() {
+        const easeM = "Sine.InOut";
+
+        const timeX = 200;
+
+        const SX = 435;
+        const SY = 556;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite,
+            x: SX,
+            duration: timeX,
+            ease: "Linear",
+            onComplete: () => {
+                this.startERT4();
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite,
+            y: SY,
+            duration: timeX / 2,
+            ease: "Easy.In",
+            yoyo: true,
+        });
+    }
+
+     startERT4() {
+        const easeM = "Sine.InOut";
+
+        const timeX = 250;
+
+        const SX = F_W/2;
+        const SY = 685;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite,
+            x: SX,
+            duration: timeX,
+            ease: "Linear",
+            onComplete: () => {
+                this.ballSprite.setVisible(false);
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite,
+            y: SY,
+            duration: timeX,
+            ease: "Cubic.In",
+        });
+    }
+
+    startGame() {
+        if (Math.random()>0.5)
+            this.startRT1();
+        else
+            this.startGT1();
+    }
 
     stopTutorial() {}
 
-    update(dt) {
-        if (this.t1active) {
-            this.time1 += dt;
-
-            if (this.time1 < 0.5) {
-            }
-        }
-    }
+    update(dt) {}
 
     startEndScreen() {}
 
@@ -299,15 +471,15 @@ export default class MainGame extends Phaser.Scene {
 
         this.gameBackContainer.setScale(
             this.fieldScale * scaleX,
-            this.fieldScale * scaleY
+            this.fieldScale * scaleY,
         );
         this.gameContainer.setScale(
             this.fieldScale * scaleX,
-            this.fieldScale * scaleY
+            this.fieldScale * scaleY,
         );
         this.uiContainer.setScale(
             this.fieldScale * scaleX,
-            this.fieldScale * scaleY
+            this.fieldScale * scaleY,
         );
 
         this.gameBackContainer.x =
@@ -325,7 +497,7 @@ export default class MainGame extends Phaser.Scene {
 
         this.bg.setScale(
             this.bgScale * scaleX * scaleBg,
-            this.bgScale * scaleY * scaleBg
+            this.bgScale * scaleY * scaleBg,
         );
         this.bg.x = this.scale.width / 2;
         this.bg.y = this.scale.height / 2;
