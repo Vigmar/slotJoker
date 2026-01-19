@@ -151,8 +151,8 @@ export default class MainGame extends Phaser.Scene {
 
     startGT2() {
 
-        const S3X = 222;
-        const S3Y = 444;
+        const S3X = 200;
+        const S3Y = 410;
 
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite,
@@ -174,14 +174,14 @@ export default class MainGame extends Phaser.Scene {
     startGT3() {
 
         const S3X = 275;
-        const S3Y = 675;
+        const S3Y = 510;
 
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite,
             x: S3X,
             duration: 500,
             ease: "Linear",
-            onComplete: ()=>{ }
+            onComplete: ()=>{ this.startEndGT()}
         });
 
         const tweenY1 = this.tweens.add({
@@ -189,6 +189,65 @@ export default class MainGame extends Phaser.Scene {
             y: S3Y,
             duration: 500,
             ease: "Sine.In",
+        });
+
+    }
+
+    startEndGT() {
+
+        const SX = 275;
+        const SY = 510;
+        const DX = 14;
+        const DY = 35;
+
+        const timeX = 150;
+        const easeM = "Sine.InOut";
+        
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite,
+            x: SX-DX,
+            y: SY+DY,
+            duration: timeX,
+            ease: easeM,
+            onComplete: ()=>{ 
+
+            const tweenX2 = this.tweens.add({
+            targets: this.ballSprite,
+            x: SX,
+            y: SY+2*DY,
+            duration: timeX,
+            ease: easeM,
+            onComplete: ()=>{ 
+
+                const tweenX3 = this.tweens.add({
+                    targets: this.ballSprite,
+                    x: SX-DX,
+                    y: SY+3*DY,
+                    duration: timeX,
+                    ease: easeM,
+                    onComplete: ()=>{ 
+
+                        const tweenX4 = this.tweens.add({
+                    targets: this.ballSprite,
+                    x: SX,
+                    y: SY+4*DY+20,
+                    duration: timeX,
+                    ease: easeM,
+                    onComplete: ()=>{ 
+
+                        this.ballSprite.setVisible(false);
+                    }});
+
+
+                    }});
+
+
+                
+            }});
+
+
+            }
         });
 
     }
