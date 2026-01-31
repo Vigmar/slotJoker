@@ -37,6 +37,9 @@ export default class MainGame extends Phaser.Scene {
     tutorTween = null;
     ambSound = null;
 
+    isLooping = true;
+    video = null;
+
     fieldSprite = null;
     frameSprite = null;
     ballSprite = null;
@@ -64,6 +67,7 @@ export default class MainGame extends Phaser.Scene {
 
         //this.load.image("start", "assets/startlogo.png");
         this.load.image("endbg", "assets/background.png");
+        this.load.video("v1", "assets/v1.mp4");
     }
 
     create() {
@@ -81,12 +85,33 @@ export default class MainGame extends Phaser.Scene {
         this.backContainer = this.add.container();
 
         this.gameBackContainer = this.add.container();
+
+        this.video = this.add
+            .video(this.fieldW / 2, this.fielfH / 2, "v1")
+            .setOrigin(0.5, 0.5).setMute(true);
+            this.video.setScale(0.43);
+			
+            this.video.play(true);
+			
+
+        this.video.on("created", () => {
+            console.log("v created")
+            this.video.video.currentTime = 0;
+            this.video.play(true);
+        });
+
+        this.gameBackContainer.add(this.video);
+
+
         this.frameSprite = this.add
             .sprite(this.fieldW / 2, this.fielfH / 2, "main", "frame.png")
             .setOrigin(0.5, 0.5);
+        
         this.fieldSprite = this.add
             .sprite(this.fieldW / 2, this.fielfH / 2, "main", "field.png")
             .setOrigin(0.5, 0.5);
+        
+            
 
         this.gameBackContainer.add(this.frameSprite);
         this.gameBackContainer.add(this.fieldSprite);
@@ -101,8 +126,14 @@ export default class MainGame extends Phaser.Scene {
 
         this.uiContainer = this.add.container();
 
-        this.speedBack = this.add.sprite(900,760,"main","button_back.png").setScale(0.6).setOrigin(0.5,0.5);
-        this.speedBtn = this.add.sprite(900,780,"main","button.png").setScale(0.7).setOrigin(0.5,0.7);
+        this.speedBack = this.add
+            .sprite(900, 760, "main", "button_back.png")
+            .setScale(0.6)
+            .setOrigin(0.5, 0.5);
+        this.speedBtn = this.add
+            .sprite(900, 780, "main", "button.png")
+            .setScale(0.7)
+            .setOrigin(0.5, 0.7);
         this.uiContainer.add(this.speedBack);
         this.uiContainer.add(this.speedBtn);
 
@@ -112,6 +143,10 @@ export default class MainGame extends Phaser.Scene {
 
         this.scale.on("resize", this.resizeGame, this);
         this.resizeGame();
+
+        // Использование видео как текстуру для спрайта
+        //const sprite = this.add.sprite(400, 300, video.texture);
+        //this.uiContainer.add(video);
 
         this.startGame();
     }
@@ -408,12 +443,12 @@ export default class MainGame extends Phaser.Scene {
         });
     }
 
-     startERT4() {
+    startERT4() {
         const easeM = "Sine.InOut";
 
         const timeX = 250;
 
-        const SX = F_W/2;
+        const SX = F_W / 2;
         const SY = 685;
 
         const tweenX1 = this.tweens.add({
@@ -445,8 +480,6 @@ export default class MainGame extends Phaser.Scene {
             duration: 500,
             ease: "Linear",
             onComplete: () => {
-
-                
                 this.tweens.add({
                     targets: this.ballSprite,
                     x: S2X,
@@ -460,10 +493,9 @@ export default class MainGame extends Phaser.Scene {
                     duration: 500,
                     ease: "Sine.In",
                     onComplete: () => {
-                       this.startBT2();
+                        this.startBT2();
                     },
                 });
-                
             },
         });
 
@@ -476,8 +508,6 @@ export default class MainGame extends Phaser.Scene {
     }
 
     startBT2() {
-        
-     
         const S3X = 275;
         const S3Y = 510;
 
@@ -491,17 +521,14 @@ export default class MainGame extends Phaser.Scene {
         this.tweens.chain({
             targets: this.ballSprite,
             tweens: [
-                { x: SX + 30, y: SY , duration: timeX, ease: easeM },
+                { x: SX + 30, y: SY, duration: timeX, ease: easeM },
                 { x: SX + 60, y: SY + 63, duration: timeX * 1.6, ease: easeM },
-                
             ],
             onComplete: () => {
                 //   this.ballSprite.setVisible(false);
                 this.startBT3();
-                
             },
         });
-    
     }
 
     startBT3() {
@@ -523,19 +550,16 @@ export default class MainGame extends Phaser.Scene {
             y: S3Y,
             duration: 200,
             ease: "Sine.In",
-             onComplete: () => {
-
-                
+            onComplete: () => {
                 this.tweens.add({
                     targets: this.ballSprite,
-                    y: S3Y+40,
+                    y: S3Y + 40,
                     duration: 100,
                     ease: "Sine.In",
                     onComplete: () => {
                         this.startBT4();
                     },
                 });
-              
             },
         });
     }
@@ -559,7 +583,7 @@ export default class MainGame extends Phaser.Scene {
             y: S3Y,
             duration: 260,
             ease: "Sine.In",
-             onComplete: () => {
+            onComplete: () => {
                 this.startBT5();
             },
         });
@@ -584,7 +608,7 @@ export default class MainGame extends Phaser.Scene {
             y: S3Y,
             duration: 360,
             ease: "Sine.In",
-             onComplete: () => {
+            onComplete: () => {
                 this.startBT6();
             },
         });
@@ -609,7 +633,7 @@ export default class MainGame extends Phaser.Scene {
             y: S3Y,
             duration: 460,
             ease: "Sine.In",
-             onComplete: () => {
+            onComplete: () => {
                 this.startBT7();
             },
         });
@@ -634,7 +658,7 @@ export default class MainGame extends Phaser.Scene {
             y: S3Y,
             duration: 260,
             ease: "Sine.In",
-             onComplete: () => {
+            onComplete: () => {
                 this.startBT8();
             },
         });
@@ -659,15 +683,11 @@ export default class MainGame extends Phaser.Scene {
             y: S3Y,
             duration: 260,
             ease: "Sine.In",
-             onComplete: () => {
-            
-            },
+            onComplete: () => {},
         });
     }
 
     startGame() {
-
-
         /*
         if (Math.random()>0.5)
             this.startRT1();
@@ -680,7 +700,18 @@ export default class MainGame extends Phaser.Scene {
 
     stopTutorial() {}
 
-    update(dt) {}
+    update() {
+        if (this.isLooping && this.video.isPlaying) {
+            const currentTime = this.video.getCurrentTime();
+
+            if (currentTime >= 1.15) {
+                console.log(currentTime);
+                this.video.stop();
+                this.video.video.currentTime = 0;
+                this.video.play(true);
+            }
+        }
+    }
 
     startEndScreen() {}
 
