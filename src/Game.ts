@@ -842,8 +842,8 @@ export default class MainGame extends Phaser.Scene {
 
         this.bgScale =
             window.innerWidth > window.innerHeight
-                ? this.scale.width / 1024
-                : this.scale.height / 1024;
+                ? this.scale.width / 2048
+                : this.scale.height / 2048;
 
         this.fieldScale =
             window.innerWidth < window.innerHeight
