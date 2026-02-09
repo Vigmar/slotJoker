@@ -4,6 +4,7 @@ export const F_W = 1026;
 export const F_H = 840;
 
 const GRID_OFFSET_X = 0;
+const TIME_MUL = 0.99;
 
 const B_X = 105;
 const B_Y = 235;
@@ -22,6 +23,8 @@ export default class MainGame extends Phaser.Scene {
     gameContainer = null;
     tapeContainer = null;
     gameBackContainer = null;
+
+    isDragging = false;
 
     backContainer = null;
     uiContainer = null;
@@ -50,6 +53,8 @@ export default class MainGame extends Phaser.Scene {
     t1active = false;
     time1 = null;
     angle1 = null;
+	
+	ambSound = null;
 
     isSoundEnable = true;
     gameStep = 0;
@@ -74,7 +79,7 @@ export default class MainGame extends Phaser.Scene {
         this.load.video("v1", "assets/v1.mp4");
         this.load.audio("ball", "assets/ball.mp3");
         this.load.audio("click", "assets/click.mp3");
-        this.load.audio("sndbg", "sounds/background.mp3");
+        this.load.audio("sndbg", "assets/background.mp3");
     }
 
     create() {
@@ -94,10 +99,10 @@ export default class MainGame extends Phaser.Scene {
         this.gameBackContainer = this.add.container();
 
         this.video = this.add
-            .video(this.fieldW / 2, this.fielfH / 2, "v1")
+            .video(this.fieldW / 2, 18+this.fielfH / 2, "v1")
             .setOrigin(0.5, 0.5)
             .setMute(true);
-        this.video.setScale(0.43);
+        this.video.setScale(0.72);
 
         this.video.play(true);
 
@@ -147,7 +152,7 @@ export default class MainGame extends Phaser.Scene {
             .setInteractive();
 
         this.bonusSprite = this.add
-            .sprite(F_W / 2, -400, "main", "bonus.png")
+            .sprite(F_W / 2, -1400, "main", "bonus.png")
             .setOrigin(0.5, 0.5)
             .setScale(0.6);
 
@@ -162,22 +167,31 @@ export default class MainGame extends Phaser.Scene {
         this.scale.on("resize", this.resizeGame, this);
         this.resizeGame();
 
+        
         this.speedBtn.on("pointerdown", () => {
             if (!this.isMoving) {
                 this.step++;
                 this.sound.play("click");
+
+                this.video.video.currentTime = 2.03;
+                this.video.play(true);
 
                 if (this.step == 1) this.startGT1();
                 else if (this.step == 3) this.startRT1();
                 else if (this.step == 5) this.startBT1();
             }
         });
+        
 
-        // Использование видео как текстуру для спрайта
-        //const sprite = this.add.sprite(400, 300, video.texture);
-        //this.uiContainer.add(video);
-
+        
         this.startGame();
+		
+		this.ambSound = this.sound.add("sndbg");
+
+                    this.ambSound.play({
+                        loop: true,
+                    });
+
     }
 
     newStep() {
@@ -191,7 +205,7 @@ export default class MainGame extends Phaser.Scene {
 
             this.video.stop();
 
-            this.video.video.currentTime = 0;
+            this.video.video.currentTime = this.step>=6?4.24:0;
             this.video.play(true);
 
             this.isMoving = true;
@@ -205,14 +219,14 @@ export default class MainGame extends Phaser.Scene {
                     this.tweens.add({
                         targets: this.bonusSprite,
                         y: F_H / 2,
-                        duration: 300,
+                        duration: this.step==6?1500:1200,
                         ease: "Sine.In",
                         onComplete: () => {
 
                             console.log(this.step);
 
                             if (this.step < 7) {
-                                this.bonusSprite.y = -400;
+                                this.bonusSprite.y = -1400;
                                 if (this.step<6)
                                 this.isMoving = false;   
                             }
@@ -564,6 +578,8 @@ export default class MainGame extends Phaser.Scene {
     }
 
     startBT1() {
+
+        console.log(this.time.now);
         this.isMoving = true;
         this.ballSprite.x = B_X;
         this.ballSprite.y = B_Y;
@@ -576,7 +592,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite,
             x: S1X,
-            duration: 500,
+            duration: 500*TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 this.tweens.add({
@@ -589,7 +605,7 @@ export default class MainGame extends Phaser.Scene {
                 this.tweens.add({
                     targets: this.ballSprite,
                     y: 136,
-                    duration: 500,
+                    duration: 500*TIME_MUL,
                     ease: "Sine.In",
                     onComplete: () => {
                         this.startBT2();
@@ -601,7 +617,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite,
             y: 70,
-            duration: 500,
+            duration: 500*TIME_MUL,
             ease: "Sine.Out",
         });
     }
@@ -614,7 +630,7 @@ export default class MainGame extends Phaser.Scene {
         const SY = 136;
         const DX = 14;
         const DY = 35;
-        const timeX = 100;
+        const timeX = 100*TIME_MUL;
         const easeM = "Sine.InOut";
 
         this.tweens.chain({
@@ -637,7 +653,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite,
             x: S3X,
-            duration: 300,
+            duration: 300*TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 //this.startERT1();
@@ -647,13 +663,13 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite,
             y: S3Y,
-            duration: 200,
+            duration: 200*TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.tweens.add({
                     targets: this.ballSprite,
                     y: S3Y + 40,
-                    duration: 100,
+                    duration: 100*TIME_MUL,
                     ease: "Sine.In",
                     onComplete: () => {
                         this.startBT4();
@@ -670,7 +686,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite,
             x: S3X,
-            duration: 260,
+            duration: 260*TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 //this.startERT1();
@@ -680,7 +696,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite,
             y: S3Y,
-            duration: 260,
+            duration: 260*TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.startBT5();
@@ -695,7 +711,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite,
             x: S3X,
-            duration: 360,
+            duration: 360*TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 //this.startERT1();
@@ -705,7 +721,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite,
             y: S3Y,
-            duration: 360,
+            duration: 360*TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.startBT6();
@@ -720,7 +736,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite,
             x: S3X,
-            duration: 460,
+            duration: 460*TIME_MUL,
             ease: "Linear",
             onComplete: () => {},
         });
@@ -728,7 +744,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite,
             y: S3Y,
-            duration: 460,
+            duration: 460*TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.startBT7();
@@ -743,7 +759,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite,
             x: S3X,
-            duration: 260,
+            duration: 260*TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 //this.startERT1();
@@ -753,7 +769,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite,
             y: S3Y,
-            duration: 260,
+            duration: 260*TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.startBT8();
@@ -768,7 +784,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite,
             x: S3X,
-            duration: 260,
+            duration: 260*TIME_MUL,
             ease: "Linear",
             onComplete: () => {},
         });
@@ -776,13 +792,14 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite,
             y: S3Y,
-            duration: 260,
+            duration: 260*TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.ballSprite.setVisible(false);
                 this.isMoving = false;
                 this.step++;
                 this.sound.play("ball");
+                console.log(this.time.now);
                 this.newStep();
             },
         });
@@ -802,21 +819,28 @@ export default class MainGame extends Phaser.Scene {
                 this.video.play(true);
             }
 
-            if (currentTime >= 4.06 && this.step == 1) {
+            if (currentTime >= 4.06 && ( this.step == 1 || this.step == 3)) {
                 this.video.stop();
                 this.video.video.currentTime = 2.03;
                 this.video.play(true);
             }
 
+            if (currentTime >= 7 &&  this.step == 5) {
+                this.video.stop();
+                //this.video.video.currentTime = 2.03;
+                //this.video.play(true);
+            }
+
+
             if (currentTime >= 1.15 && (this.step == 2 || this.step == 4)) {
                 this.video.stop();
-                this.video.video.currentTime = 0;
+                this.video.video.currentTime = this.step==2?0:0.24;
                 this.video.play(true);
             }
 
-            if (currentTime >= 4.19 && this.step == 6) {
+            if (currentTime >= 7.2 && this.step == 6) {
                 this.video.stop();
-                this.video.video.currentTime = 0;
+                this.video.video.currentTime = 4.24;
                 this.video.play(true);
             }
         }
