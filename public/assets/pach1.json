@@ -34,7 +34,7 @@
 },
 {
 	"filename": "bonus/1.5x left.png",
-	"frame": {"x":553,"y":0,"w":87,"h":87},
+	"frame": {"x":630,"y":0,"w":87,"h":87},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":87,"h":87},
@@ -42,7 +42,7 @@
 },
 {
 	"filename": "bonus/1.5x right.png",
-	"frame": {"x":640,"y":0,"w":87,"h":87},
+	"frame": {"x":717,"y":0,"w":87,"h":87},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":87,"h":87},
@@ -50,7 +50,7 @@
 },
 {
 	"filename": "bonus/1.9x bonus.png",
-	"frame": {"x":727,"y":0,"w":103,"h":103},
+	"frame": {"x":804,"y":0,"w":103,"h":103},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":103},
@@ -66,7 +66,7 @@
 },
 {
 	"filename": "button.png",
-	"frame": {"x":830,"y":0,"w":144,"h":167},
+	"frame": {"x":1051,"y":0,"w":144,"h":167},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":144,"h":167},
@@ -122,15 +122,15 @@
 },
 {
 	"filename": "eva-1.png",
-	"frame": {"x":265,"y":0,"w":128,"h":80},
+	"frame": {"x":342,"y":0,"w":128,"h":80},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":80},
 	"sourceSize": {"w":128,"h":80}
 },
 {
-	"filename": "evangelion logo.png",
-	"frame": {"x":1154,"y":0,"w":527,"h":211},
+	"filename": "logo.png",
+	"frame": {"x":1375,"y":0,"w":527,"h":211},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":527,"h":211},
@@ -138,7 +138,7 @@
 },
 {
 	"filename": "slot.png",
-	"frame": {"x":393,"y":0,"w":160,"h":81},
+	"frame": {"x":470,"y":0,"w":160,"h":81},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":160,"h":81},
@@ -146,7 +146,7 @@
 },
 {
 	"filename": "slot_frame.png",
-	"frame": {"x":974,"y":0,"w":180,"h":180},
+	"frame": {"x":1195,"y":0,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -159,6 +159,22 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":350,"h":350},
 	"sourceSize": {"w":350,"h":350}
+},
+{
+	"filename": "tap.png",
+	"frame": {"x":265,"y":0,"w":77,"h":77},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":77,"h":77},
+	"sourceSize": {"w":77,"h":77}
+},
+{
+	"filename": "tutor_hand.png",
+	"frame": {"x":907,"y":0,"w":144,"h":153},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":144,"h":153},
+	"sourceSize": {"w":144,"h":153}
 },
 {
 	"filename": "wheel.png",
@@ -175,6 +191,6 @@
 	"format": "RGBA8888",
 	"size": {"w":2044,"h":1401},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:8d9fd7c5b9b5d54652c350fac1edcaa2:186e08323fdc220ee19aeebf0b2cdc8a:51fac7cf127697f239d2d46342948c01$"
+	"smartupdate": "$TexturePacker:SmartUpdate:6c92ee457b94718cdf2d149389495812:4f124087bb2846d17bfe5e566c2077a6:51fac7cf127697f239d2d46342948c01$"
 }
 }

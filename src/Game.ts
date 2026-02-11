@@ -31,7 +31,11 @@ export default class MainGame extends Phaser.Scene {
 
     speedBtn = null;
     speedBack = null;
+    tapBtn = null;
+    tapLeft = null;
+    tapRight = null;
     bonusSprite = null;
+    logoSprite = null;
 
     downloadBtn = null;
     endTitle = null;
@@ -70,17 +74,10 @@ export default class MainGame extends Phaser.Scene {
     fieldW = 1026;
     fielfH = 840;
 
-    preload() {
-        this.load.atlas("main", "assets/pach1.png", "assets/pach1.json");
-
-        //this.load.image("start", "assets/startlogo.png");
-        this.load.image("endbg", "assets/background.jpg");
-        this.load.image("fr1", "assets/frame.png");
-        this.load.video("v1", "assets/v1.mp4");
-        this.load.audio("ball", "assets/ball.mp3");
-        this.load.audio("click", "assets/click.mp3");
-        this.load.audio("sndbg", "assets/background.mp3");
+    constructor() {
+        super('MainGame');
     }
+
 
     create() {
         this.bgScale =
@@ -146,19 +143,40 @@ export default class MainGame extends Phaser.Scene {
             .setScale(0.8)
             .setOrigin(0.5, 0.5);
         this.speedBtn = this.add
-            .sprite(850, 770, "main", "button.png")
+            .sprite(850, 750, "main", "button.png")
             .setScale(0.8)
-            .setOrigin(0.5, 0.7)
+            .setOrigin(0.5, 0.57)
             .setInteractive();
+
+
+        this.tapBtn = this.add
+            .sprite(850, 750, "main", "tap.png")
+            .setScale(0.8)
+            .setOrigin(0.5, 0.5)
+
+        this.tapLeft =  this.add.rectangle(750, 720, 90, 150, 0x000000, 0).setInteractive();
+        this.tapRight =  this.add.rectangle(950, 720, 90, 150, 0x000000, 0).setInteractive();
+        
+            
 
         this.bonusSprite = this.add
             .sprite(F_W / 2, -1400, "main", "bonus.png")
             .setOrigin(0.5, 0.5)
-            .setScale(0.6);
+            .setScale(1.8);
+
+            
+        this.logoSprite = this.add
+            .sprite(F_W / 2, -50, "main", "logo.png")
+            .setOrigin(0.5, 1).setScale(0.8);
+            
 
         this.uiContainer.add(this.speedBack);
         this.uiContainer.add(this.speedBtn);
+        this.uiContainer.add(this.tapBtn);
+        this.uiContainer.add(this.tapLeft);
+        this.uiContainer.add(this.tapRight);
         this.uiContainer.add(this.bonusSprite);
+        this.uiContainer.add(this.logoSprite);
 
         this.gameBackContainer.setScale(this.fieldScale);
         this.gameContainer.setScale(this.fieldScale);
@@ -167,6 +185,19 @@ export default class MainGame extends Phaser.Scene {
         this.scale.on("resize", this.resizeGame, this);
         this.resizeGame();
 
+
+        this.tapLeft.on("pointerdown", () => {
+
+            
+            if (this.speedBtn.angle>=-90)
+                this.speedBtn.setAngle(this.speedBtn.angle-15);
+        });
+
+        this.tapRight.on("pointerdown", () => {
+
+            if (this.speedBtn.angle<=90)
+                this.speedBtn.setAngle(this.speedBtn.angle+15);
+        });
         
         this.speedBtn.on("pointerdown", () => {
             if (!this.isMoving) {
@@ -200,13 +231,17 @@ export default class MainGame extends Phaser.Scene {
 
             if (this.step == 7) { 
                 this.bonusSprite.setFrame("cta.png");
+                this.bonusSprite.setScale(0.8);
                 
             }
 
+            if (this.step<7)
+            {
             this.video.stop();
 
             this.video.video.currentTime = this.step>=6?4.24:0;
             this.video.play(true);
+            }
 
             this.isMoving = true;
 
@@ -821,7 +856,7 @@ export default class MainGame extends Phaser.Scene {
 
             if (currentTime >= 4.06 && ( this.step == 1 || this.step == 3)) {
                 this.video.stop();
-                this.video.video.currentTime = 2.03;
+                this.video.video.currentTime = 1.5;
                 this.video.play(true);
             }
 
@@ -838,7 +873,8 @@ export default class MainGame extends Phaser.Scene {
                 this.video.play(true);
             }
 
-            if (currentTime >= 7.2 && this.step == 6) {
+            if (currentTime >= 7.1 && this.step >5) {
+                console.log("loop",this.step);
                 this.video.stop();
                 this.video.video.currentTime = 4.24;
                 this.video.play(true);

@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 
 import MainGame from './Game'
+import PreloaderScene from './Preloader';
 
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
@@ -8,7 +9,7 @@ const config: Phaser.Types.Core.GameConfig = {
     height: 1920,
 	parent: 'phaser-example',
 	backgroundColor: '#ffffff',
-    scene: [MainGame],
+    scene: [PreloaderScene,MainGame],
 	scale: {
 		mode: Phaser.Scale.SHOW_ALL,  
         
