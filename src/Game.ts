@@ -204,8 +204,10 @@ export default class MainGame extends Phaser.Scene {
                 this.step++;
                 this.sound.play("click");
 
-                this.video.video.currentTime = 2.03;
+                this.video.video.currentTime = 1.18;
                 this.video.play(true);
+
+                console.log(this.time.now);
 
                 if (this.step == 1) this.startGT1();
                 else if (this.step == 3) this.startRT1();
@@ -254,7 +256,7 @@ export default class MainGame extends Phaser.Scene {
                     this.tweens.add({
                         targets: this.bonusSprite,
                         y: F_H / 2,
-                        duration: this.step==6?1500:1200,
+                        duration: this.step==6?1500:600,
                         ease: "Sine.In",
                         onComplete: () => {
 
@@ -406,6 +408,7 @@ export default class MainGame extends Phaser.Scene {
                                         this.step++;
                                         this.sound.play("ball");
                                         this.newStep();
+                                        console.log(this.time.now);
                                     },
                                 });
                             },
@@ -600,6 +603,7 @@ export default class MainGame extends Phaser.Scene {
                 this.isMoving = false;
                 this.step++;
                 this.sound.play("ball");
+                console.log(this.time.now);
                 this.newStep();
             },
         });
@@ -614,7 +618,7 @@ export default class MainGame extends Phaser.Scene {
 
     startBT1() {
 
-        console.log(this.time.now);
+        
         this.isMoving = true;
         this.ballSprite.x = B_X;
         this.ballSprite.y = B_Y;
@@ -834,7 +838,7 @@ export default class MainGame extends Phaser.Scene {
                 this.isMoving = false;
                 this.step++;
                 this.sound.play("ball");
-                console.log(this.time.now);
+                
                 this.newStep();
             },
         });
@@ -856,7 +860,7 @@ export default class MainGame extends Phaser.Scene {
 
             if (currentTime >= 4.06 && ( this.step == 1 || this.step == 3)) {
                 this.video.stop();
-                this.video.video.currentTime = 1.5;
+                this.video.video.currentTime = 1.18;
                 this.video.play(true);
             }
 
