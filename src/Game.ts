@@ -33,6 +33,8 @@ export default class MainGame extends Phaser.Scene {
     speedBack = null;
     tapBtn = null;
     tapLeft = null;
+    minSprite = null;
+    maxSprite = null;
     tapRight = null;
     bonusSprite = null;
     logoSprite = null;
@@ -156,6 +158,9 @@ export default class MainGame extends Phaser.Scene {
 
         this.tapLeft =  this.add.rectangle(750, 720, 90, 150, 0x000000, 0).setInteractive();
         this.tapRight =  this.add.rectangle(950, 720, 90, 150, 0x000000, 0).setInteractive();
+
+        this.minSprite = this.add.sprite(770,750, "main", "min.png");
+        this.maxSprite = this.add.sprite(920,750, "main", "max.png");
         
             
 
@@ -177,6 +182,8 @@ export default class MainGame extends Phaser.Scene {
         this.uiContainer.add(this.tapRight);
         this.uiContainer.add(this.bonusSprite);
         this.uiContainer.add(this.logoSprite);
+        this.uiContainer.add(this.minSprite);
+        this.uiContainer.add(this.maxSprite);
 
         this.gameBackContainer.setScale(this.fieldScale);
         this.gameContainer.setScale(this.fieldScale);
