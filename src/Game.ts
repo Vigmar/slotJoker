@@ -241,6 +241,11 @@ export default class MainGame extends Phaser.Scene {
             if (this.step == 7) { 
                 this.bonusSprite.setFrame("cta.png");
                 this.bonusSprite.setScale(0.8);
+				this.bonusSprite.setInteractive();
+			this.bonusSprite.on("pointerdown", () => {
+
+				window.location.href = {offer_link};
+			});	
                 
             }
 
