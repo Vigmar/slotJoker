@@ -244,7 +244,7 @@ export default class MainGame extends Phaser.Scene {
 				this.bonusSprite.setInteractive();
 			this.bonusSprite.on("pointerdown", () => {
 
-				window.location.href = {offer_link};
+				window.location.href = "{offer_link}";
 			});	
                 
             }
