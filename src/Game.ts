@@ -28,6 +28,7 @@ export default class MainGame extends Phaser.Scene {
 
     backContainer = null;
     uiContainer = null;
+    btnContainer = null;
 
     speedBtn = null;
     speedBack = null;
@@ -59,8 +60,6 @@ export default class MainGame extends Phaser.Scene {
     t1active = false;
     time1 = null;
     angle1 = null;
-	
-	ambSound = null;
 
     isSoundEnable = true;
     gameStep = 0;
@@ -140,29 +139,77 @@ export default class MainGame extends Phaser.Scene {
 
         this.uiContainer = this.add.container();
 
+                this.soundBtn = this.add
+            .sprite(0 + 10, this.scale.height - 50, "main", "volumeOn.png")
+            .setOrigin(0, 1)
+            .setScale(0.7 * this.fieldScale)
+            .setInteractive()
+            .on("pointerdown", () => {
+                let scaleX = 1;
+                let scaleY = 1;
+                let scrX = 0;
+                let scrY = 0;
+
+                if (window.innerWidth > window.innerHeight) {
+                    scaleX = window.innerHeight / window.innerWidth;
+                    scrX = 800 * (1 - scaleX);
+                } else {
+                    scaleY = window.innerWidth / window.innerHeight;
+                    scrY = 800 * (1 - scaleY);
+                }
+
+                if (!this.isSoundEnable) {
+                    if (!this.ambSound)
+                        this.ambSound = this.sound.add("sndbg");
+
+                    this.ambSound.play({
+                        loop: true,
+                    });
+                    this.isSoundEnable = true;
+                    this.soundBtn.setTexture("main", "volumeOn.png");
+                    this.soundBtn.setScale(
+                        0.7 * this.fieldScale * scaleX,
+                        0.7 * this.fieldScale * scaleY
+                    );
+                } else {
+                    this.isSoundEnable = false;
+                    if (this.ambSound)
+                        this.ambSound.stop();
+                    this.soundBtn.setTexture("main", "volumeOff.png");
+                    this.soundBtn.setScale(
+                        0.42 * this.fieldScale * scaleX,
+                        0.42* this.fieldScale * scaleY
+                    );
+                }
+            });
+
+
+        this.btnContainer = this.add.container();
+        this.btnContainer.x = 850;
+        this.btnContainer.y = 750;
+
         this.speedBack = this.add
-            .sprite(850, 750, "main", "button_back.png")
+            .sprite(0, 0, "main", "button_back.png")
             .setScale(0.8)
             .setOrigin(0.5, 0.5);
         this.speedBtn = this.add
-            .sprite(850, 750, "main", "button.png")
+            .sprite(0, 0, "main", "button.png")
             .setScale(0.8)
             .setOrigin(0.5, 0.57)
             .setInteractive();
 
 
         this.tapBtn = this.add
-            .sprite(850, 750, "main", "tap.png")
+            .sprite(0, 0, "main", "tap.png")
             .setScale(0.8)
             .setOrigin(0.5, 0.5)
 
-        this.tapLeft =  this.add.rectangle(750, 720, 90, 150, 0x000000, 0).setInteractive();
-        this.tapRight =  this.add.rectangle(950, 720, 90, 150, 0x000000, 0).setInteractive();
+        this.tapLeft =  this.add.rectangle(-100, -30, 90, 150, 0x000000, 0).setInteractive();
+        this.tapRight =  this.add.rectangle(100, -30, 90, 150, 0x000000, 0).setInteractive();
 
-        this.minSprite = this.add.sprite(770,750, "main", "min.png");
-        this.maxSprite = this.add.sprite(920,750, "main", "max.png");
+        this.minSprite = this.add.sprite(-80,0, "main", "min.png");
+        this.maxSprite = this.add.sprite(70,0, "main", "max.png");
         
-            
 
         this.bonusSprite = this.add
             .sprite(F_W / 2, -1400, "main", "bonus.png")
@@ -175,15 +222,17 @@ export default class MainGame extends Phaser.Scene {
             .setOrigin(0.5, 1).setScale(0.8);
             
 
-        this.uiContainer.add(this.speedBack);
-        this.uiContainer.add(this.speedBtn);
-        this.uiContainer.add(this.tapBtn);
-        this.uiContainer.add(this.tapLeft);
-        this.uiContainer.add(this.tapRight);
+        
+        this.btnContainer.add(this.speedBack);
+        this.btnContainer.add(this.speedBtn);
+        this.btnContainer.add(this.tapBtn);
+        this.btnContainer.add(this.tapLeft);
+        this.btnContainer.add(this.tapRight);
+        this.uiContainer.add(this.btnContainer);    
         this.uiContainer.add(this.bonusSprite);
         this.uiContainer.add(this.logoSprite);
-        this.uiContainer.add(this.minSprite);
-        this.uiContainer.add(this.maxSprite);
+        this.btnContainer.add(this.minSprite);
+        this.btnContainer.add(this.maxSprite);
 
         this.gameBackContainer.setScale(this.fieldScale);
         this.gameContainer.setScale(this.fieldScale);
@@ -209,7 +258,7 @@ export default class MainGame extends Phaser.Scene {
         this.speedBtn.on("pointerdown", () => {
             if (!this.isMoving) {
                 this.step++;
-                this.sound.play("click");
+                if (this.isSoundEnable) this.sound.play("click");
 
                 this.video.video.currentTime = 1.18;
                 this.video.play(true);
@@ -217,8 +266,8 @@ export default class MainGame extends Phaser.Scene {
                 console.log(this.time.now);
 
                 if (this.step == 1) this.startGT1();
-                else if (this.step == 3) this.startRT1();
-                else if (this.step == 5) this.startBT1();
+                //else if (this.step == 3) this.startRT1();
+                //else if (this.step == 5) this.startBT1();
             }
         });
         
@@ -236,6 +285,23 @@ export default class MainGame extends Phaser.Scene {
 
     newStep() {
         if (this.step == 2 || this.step == 4 || this.step == 6 || this.step == 7) {
+ 
+            if (this.step == 2 || this.step ==4)
+            this.time.delayedCall(300, () => {
+           
+            if (this.step ==2)
+            {
+                  this.step =3;
+                  this.startRT1();
+            }
+
+            if (this.step ==4)
+            {
+                this.step = 5;
+                this.startBT1();   
+            }
+        });
+
             if (this.step == 6) this.bonusSprite.setFrame("super bonus.png");
 
             if (this.step == 7) { 
@@ -418,7 +484,8 @@ export default class MainGame extends Phaser.Scene {
                                         this.ballSprite.setVisible(false);
                                         this.isMoving = false;
                                         this.step++;
-                                        this.sound.play("ball");
+                                        
+                                          if (this.isSoundEnable) this.sound.play("ball");
                                         this.newStep();
                                         console.log(this.time.now);
                                     },
@@ -614,7 +681,7 @@ export default class MainGame extends Phaser.Scene {
                 this.ballSprite.setVisible(false);
                 this.isMoving = false;
                 this.step++;
-                this.sound.play("ball");
+                  if (this.isSoundEnable) this.sound.play("ball");
                 console.log(this.time.now);
                 this.newStep();
             },
@@ -849,7 +916,7 @@ export default class MainGame extends Phaser.Scene {
                 this.ballSprite.setVisible(false);
                 this.isMoving = false;
                 this.step++;
-                this.sound.play("ball");
+                if (this.isSoundEnable) this.sound.play("ball");
                 
                 this.newStep();
             },
@@ -916,6 +983,20 @@ export default class MainGame extends Phaser.Scene {
             scrY = 1024 * (1 - scaleY);
         }
 
+        if (window.innerWidth*1.4 < window.innerHeight) {
+
+            
+            this.btnContainer.x = F_W/2;
+            this.btnContainer.y = F_H+200;
+            this.btnContainer.setScale(1.5);
+        }
+        else
+        {
+            this.btnContainer.x = 850;
+            this.btnContainer.y = 750;
+            this.btnContainer.setScale(1);
+        }
+
         this.bgScale =
             window.innerWidth > window.innerHeight
                 ? this.scale.width / 2048
@@ -929,6 +1010,12 @@ export default class MainGame extends Phaser.Scene {
         this.shiftX =
             (this.scale.width - this.fieldScale * (offsetX * 2 + F_W)) / 2;
         this.shiftY = (this.scale.height - this.fieldScale * F_H) / 2 - 20;
+
+         this.soundBtn.y = this.scale.height - 50;
+        this.soundBtn.setScale(
+            0.7 * this.fieldScale * scaleX,
+            0.7 * this.fieldScale * scaleY
+        );
 
         this.gameBackContainer.setScale(
             this.fieldScale * scaleX,
@@ -949,10 +1036,22 @@ export default class MainGame extends Phaser.Scene {
             this.shiftX + scrX - 2 * (GRID_OFFSET_X - offsetX);
         this.uiContainer.x = this.shiftX + scrX - 2 * (GRID_OFFSET_X - offsetX);
 
+        
         const dY = 60;
         this.gameBackContainer.y = this.shiftY + scrY - dY;
         this.gameContainer.y = this.shiftY + scrY - dY;
         this.uiContainer.y = this.shiftY + scrY - dY;
+
+        if (window.innerWidth*1.5 < window.innerHeight) {
+               this.logoSprite.setOrigin(0.5,0);
+                this.logoSprite.y = 100-this.uiContainer.y; 
+
+        }
+        else
+            {
+                this.logoSprite.setOrigin(0.5,1);
+                this.logoSprite.y = -50;
+            }        
 
         const scaleBg = scaleX > scaleY ? scaleX / scaleY : scaleY / scaleX;
 
