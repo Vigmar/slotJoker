@@ -6,8 +6,8 @@ export const F_H = 840;
 const GRID_OFFSET_X = 0;
 const TIME_MUL = 0.99;
 
-const B_X = 105;
-const B_Y = 235;
+const B_X = 80;
+const B_Y = 230;
 
 const B_X1 = 30;
 const B_Y1 = 420;
@@ -99,10 +99,10 @@ export default class MainGame extends Phaser.Scene {
         this.gameBackContainer = this.add.container();
 
         this.video = this.add
-            .video(this.fieldW / 2, 18+this.fielfH / 2, "v1")
+            .video(this.fieldW / 2,this.fielfH / 2, "v1")
             .setOrigin(0.5, 0.5)
             .setMute(true);
-        this.video.setScale(0.72);
+        this.video.setScale(0.75);
 
         this.video.play(true);
 
@@ -115,15 +115,15 @@ export default class MainGame extends Phaser.Scene {
         this.gameBackContainer.add(this.video);
 
         this.frameSprite = this.add
-            .sprite(this.fieldW / 2, 18 + this.fielfH / 2, "fr1")
+            .sprite(this.fieldW / 2, this.fielfH / 2, "fr1")
             .setOrigin(0.5, 0.5)
-            .setScale(0.95);
+            .setScale(1);
 
         this.fieldSprite = this.add
-            .sprite(this.fieldW / 2, this.fielfH / 2, "main", "board.png")
+            .sprite(this.fieldW / 2, 10+this.fielfH / 2, "main", "board.png")
             .setOrigin(0.5, 0.5);
 
-        this.gameBackContainer.add(this.frameSprite);
+        
         this.gameBackContainer.add(this.fieldSprite);
 
         this.ballSprite = this.add
@@ -153,6 +153,8 @@ export default class MainGame extends Phaser.Scene {
         this.gameScaleContainer.add(this.ballSprite2);
         this.gameScaleContainer.add(this.ballSprite3);
 
+        this.gameScaleContainer.add(this.frameSprite);
+
         this.uiContainer = this.add.container();
 
                 this.soundBtn = this.add
@@ -174,9 +176,12 @@ export default class MainGame extends Phaser.Scene {
                     scrY = 800 * (1 - scaleY);
                 }
 
+                const mScale = (window.innerWidth / window.innerHeight>1)?0.7:1.6;
+
                 if (!this.isSoundEnable) {
                     if (!this.ambSound)
                         this.ambSound = this.sound.add("sndbg");
+
 
                     this.ambSound.play({
                         loop: true,
@@ -184,8 +189,8 @@ export default class MainGame extends Phaser.Scene {
                     this.isSoundEnable = true;
                     this.soundBtn.setTexture("main", "volumeOn.png");
                     this.soundBtn.setScale(
-                        this.fieldScale * scaleX,
-                        this.fieldScale * scaleY
+                        this.fieldScale * scaleX*mScale,
+                        this.fieldScale * scaleY*mScale
                     );
                 } else {
                     this.isSoundEnable = false;
@@ -193,15 +198,15 @@ export default class MainGame extends Phaser.Scene {
                         this.ambSound.stop();
                     this.soundBtn.setTexture("main", "volumeOff.png");
                     this.soundBtn.setScale(
-                        0.6 * this.fieldScale * scaleX,
-                        0.6* this.fieldScale * scaleY
+                        0.6 * this.fieldScale * scaleX*mScale,
+                        0.6* this.fieldScale * scaleY*mScale
                     );
                 }
             });
 
 
         this.btnContainer = this.add.container();
-        this.btnContainer.x = 850;
+        this.btnContainer.x = 880;
         this.btnContainer.y = 750;
 
         this.speedBack = this.add
@@ -286,11 +291,11 @@ export default class MainGame extends Phaser.Scene {
                 {
                     this.startGT1();
                     
-                            this.time.delayedCall(30, () => {
+                            this.time.delayedCall(60, () => {
                                 this.startRT1();
                     });
 
-                    this.time.delayedCall(60, () => {
+                    this.time.delayedCall(120, () => {
                                 this.startBT1();
                     });
 
@@ -1011,7 +1016,7 @@ export default class MainGame extends Phaser.Scene {
         }
         else
         {
-            this.btnContainer.x = 850;
+            this.btnContainer.x = 880;
             this.btnContainer.y = 750;
             this.btnContainer.setScale(1);
         }
@@ -1031,9 +1036,11 @@ export default class MainGame extends Phaser.Scene {
         this.shiftY = (this.scale.height - this.fieldScale * F_H) / 2 - 20;
 
          this.soundBtn.y = this.scale.height - 50;
+        const mScale = (window.innerWidth / window.innerHeight>1)?0.7:1.6;
+
         this.soundBtn.setScale(
-            this.fieldScale * scaleX,
-            this.fieldScale * scaleY
+            this.fieldScale * scaleX*mScale,
+            this.fieldScale * scaleY*mScale
         );
 
         this.gameBackContainer.setScale(
