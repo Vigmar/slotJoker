@@ -99,9 +99,9 @@ export default class MainGame extends Phaser.Scene {
         this.gameBackContainer = this.add.container();
 
         this.video = this.add
-            .video(this.fieldW / 2,this.fielfH / 2, "v1")
+            .video(this.fieldW / 2,10+this.fielfH / 2, "v1")
             .setOrigin(0.5, 0.5)
-            .setMute(true);
+            .setMute(true).setTint(0xA0A0A0); // Чем меньше значение (ближе к 0), тем темнее;
         this.video.setScale(0.75);
 
         this.video.play(true);
@@ -115,7 +115,7 @@ export default class MainGame extends Phaser.Scene {
         this.gameBackContainer.add(this.video);
 
         this.frameSprite = this.add
-            .sprite(this.fieldW / 2, this.fielfH / 2, "fr1")
+            .sprite(this.fieldW / 2, 10+this.fielfH / 2, "fr1")
             .setOrigin(0.5, 0.5)
             .setScale(1);
 
