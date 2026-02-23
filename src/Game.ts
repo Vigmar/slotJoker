@@ -56,6 +56,8 @@ export default class MainGame extends Phaser.Scene {
     fieldSprite = null;
     frameSprite = null;
     ballSprite = null;
+    ballSprite2 = null;
+    ballSprite3 = null;
 
     t1active = false;
     time1 = null;
@@ -129,6 +131,18 @@ export default class MainGame extends Phaser.Scene {
             .setOrigin(0.5, 0.5)
             .setVisible(false);
 
+        this.ballSprite2 = this.add
+            .sprite(B_X, B_Y, "main", "ball.png")
+            .setOrigin(0.5, 0.5)
+            .setVisible(false);
+
+
+        this.ballSprite3 = this.add
+            .sprite(B_X, B_Y, "main", "ball.png")
+            .setOrigin(0.5, 0.5)
+            .setVisible(false);
+
+
         this.gameContainer = this.add.container();
 
         this.gameScaleContainer = this.add.container();
@@ -136,6 +150,8 @@ export default class MainGame extends Phaser.Scene {
         this.gameContainer.add(this.gameScaleContainer);
 
         this.gameScaleContainer.add(this.ballSprite);
+        this.gameScaleContainer.add(this.ballSprite2);
+        this.gameScaleContainer.add(this.ballSprite3);
 
         this.uiContainer = this.add.container();
 
@@ -168,8 +184,8 @@ export default class MainGame extends Phaser.Scene {
                     this.isSoundEnable = true;
                     this.soundBtn.setTexture("main", "volumeOn.png");
                     this.soundBtn.setScale(
-                        0.7 * this.fieldScale * scaleX,
-                        0.7 * this.fieldScale * scaleY
+                        this.fieldScale * scaleX,
+                        this.fieldScale * scaleY
                     );
                 } else {
                     this.isSoundEnable = false;
@@ -177,8 +193,8 @@ export default class MainGame extends Phaser.Scene {
                         this.ambSound.stop();
                     this.soundBtn.setTexture("main", "volumeOff.png");
                     this.soundBtn.setScale(
-                        0.42 * this.fieldScale * scaleX,
-                        0.42* this.fieldScale * scaleY
+                        0.6 * this.fieldScale * scaleX,
+                        0.6* this.fieldScale * scaleY
                     );
                 }
             });
@@ -265,7 +281,23 @@ export default class MainGame extends Phaser.Scene {
 
                 console.log(this.time.now);
 
-                if (this.step == 1) this.startGT1();
+                //if (this.step == 1) this.startGT1();
+                if (this.step ==1 || this.step ==3 || this.step==5)
+                {
+                    this.startGT1();
+                    
+                            this.time.delayedCall(30, () => {
+                                this.startRT1();
+                    });
+
+                    this.time.delayedCall(60, () => {
+                                this.startBT1();
+                    });
+
+
+
+
+                }
                 //else if (this.step == 3) this.startRT1();
                 //else if (this.step == 5) this.startBT1();
             }
@@ -286,22 +318,6 @@ export default class MainGame extends Phaser.Scene {
     newStep() {
         if (this.step == 2 || this.step == 4 || this.step == 6 || this.step == 7) {
  
-            if (this.step == 2 || this.step ==4)
-            this.time.delayedCall(300, () => {
-           
-            if (this.step ==2)
-            {
-                  this.step =3;
-                  this.startRT1();
-            }
-
-            if (this.step ==4)
-            {
-                this.step = 5;
-                this.startBT1();   
-            }
-        });
-
             if (this.step == 6) this.bonusSprite.setFrame("super bonus.png");
 
             if (this.step == 7) { 
@@ -482,12 +498,12 @@ export default class MainGame extends Phaser.Scene {
                                     ease: easeM,
                                     onComplete: () => {
                                         this.ballSprite.setVisible(false);
-                                        this.isMoving = false;
-                                        this.step++;
+                                        //this.isMoving = false;
+                                        //this.step++;
                                         
                                           if (this.isSoundEnable) this.sound.play("ball");
-                                        this.newStep();
-                                        console.log(this.time.now);
+                                        //this.newStep();
+                                        //console.log(this.time.now);
                                     },
                                 });
                             },
@@ -500,28 +516,28 @@ export default class MainGame extends Phaser.Scene {
 
     startRT1() {
         this.isMoving = true;
-        this.ballSprite.x = B_X;
-        this.ballSprite.y = B_Y;
-        this.ballSprite.setVisible(true);
+        this.ballSprite2.x = B_X;
+        this.ballSprite2.y = B_Y;
+        this.ballSprite2.setVisible(true);
         const S1X = 75 + (340 - 75) / 2;
         const S2X = 340;
 
         // Фаза 1: x и y параллельно
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             x: S1X,
             duration: 500,
             ease: "Linear",
             onComplete: () => {
                 this.tweens.add({
-                    targets: this.ballSprite,
+                    targets: this.ballSprite2,
                     x: S2X,
                     duration: 500,
                     ease: "Linear",
                 });
 
                 this.tweens.add({
-                    targets: this.ballSprite,
+                    targets: this.ballSprite2,
                     y: 230,
                     duration: 500,
                     ease: "Sine.In",
@@ -533,7 +549,7 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             y: 40,
             duration: 500,
             ease: "Sine.Out",
@@ -545,7 +561,7 @@ export default class MainGame extends Phaser.Scene {
         const S3Y = 410;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             x: S3X,
             duration: 500,
             ease: "Linear",
@@ -555,7 +571,7 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             y: S3Y,
             duration: 500,
             ease: "Sine.In",
@@ -567,7 +583,7 @@ export default class MainGame extends Phaser.Scene {
         const S3Y = 510;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             x: S3X,
             duration: 500,
             ease: "Linear",
@@ -577,7 +593,7 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             y: S3Y,
             duration: 500,
             ease: "Sine.In",
@@ -599,7 +615,7 @@ export default class MainGame extends Phaser.Scene {
         const easeM = "Sine.InOut";
 
         this.tweens.chain({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             tweens: [
                 { x: SX + 30, y: SY - 20, duration: timeX, ease: easeM },
                 { x: SX + 18, y: SY + 40, duration: timeX * 1.1, ease: easeM },
@@ -620,7 +636,7 @@ export default class MainGame extends Phaser.Scene {
         const S3Y = 586;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             x: S3X,
             duration: timeX,
             ease: "Linear",
@@ -630,7 +646,7 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             y: S3Y,
             duration: timeX,
             ease: "Cubic.In",
@@ -646,7 +662,7 @@ export default class MainGame extends Phaser.Scene {
         const SY = 556;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             x: SX,
             duration: timeX,
             ease: "Linear",
@@ -656,7 +672,7 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             y: SY,
             duration: timeX / 2,
             ease: "Easy.In",
@@ -673,22 +689,25 @@ export default class MainGame extends Phaser.Scene {
         const SY = 685;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             x: SX,
             duration: timeX,
             ease: "Linear",
             onComplete: () => {
-                this.ballSprite.setVisible(false);
+                this.ballSprite2.setVisible(false);
+                if (this.isSoundEnable) this.sound.play("ball");
+                /*
                 this.isMoving = false;
                 this.step++;
-                  if (this.isSoundEnable) this.sound.play("ball");
+                  
                 console.log(this.time.now);
                 this.newStep();
+                */
             },
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite2,
             y: SY,
             duration: timeX,
             ease: "Cubic.In",
@@ -699,29 +718,29 @@ export default class MainGame extends Phaser.Scene {
 
         
         this.isMoving = true;
-        this.ballSprite.x = B_X;
-        this.ballSprite.y = B_Y;
-        this.ballSprite.setVisible(true);
+        this.ballSprite3.x = B_X;
+        this.ballSprite3.y = B_Y;
+        this.ballSprite3.setVisible(true);
 
         const S1X = 280;
         const S2X = 454;
 
         // Фаза 1: x и y параллельно
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             x: S1X,
             duration: 500*TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 this.tweens.add({
-                    targets: this.ballSprite,
+                    targets: this.ballSprite3,
                     x: S2X,
                     duration: 500,
                     ease: "Linear",
                 });
 
                 this.tweens.add({
-                    targets: this.ballSprite,
+                    targets: this.ballSprite3,
                     y: 136,
                     duration: 500*TIME_MUL,
                     ease: "Sine.In",
@@ -733,7 +752,7 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             y: 70,
             duration: 500*TIME_MUL,
             ease: "Sine.Out",
@@ -752,7 +771,7 @@ export default class MainGame extends Phaser.Scene {
         const easeM = "Sine.InOut";
 
         this.tweens.chain({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             tweens: [
                 { x: SX + 30, y: SY, duration: timeX, ease: easeM },
                 { x: SX + 60, y: SY + 63, duration: timeX * 1.6, ease: easeM },
@@ -769,7 +788,7 @@ export default class MainGame extends Phaser.Scene {
         const S3Y = 96;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             x: S3X,
             duration: 300*TIME_MUL,
             ease: "Linear",
@@ -779,13 +798,13 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             y: S3Y,
             duration: 200*TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.tweens.add({
-                    targets: this.ballSprite,
+                    targets: this.ballSprite3,
                     y: S3Y + 40,
                     duration: 100*TIME_MUL,
                     ease: "Sine.In",
@@ -802,7 +821,7 @@ export default class MainGame extends Phaser.Scene {
         const S3Y = 175;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             x: S3X,
             duration: 260*TIME_MUL,
             ease: "Linear",
@@ -812,7 +831,7 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             y: S3Y,
             duration: 260*TIME_MUL,
             ease: "Sine.In",
@@ -827,7 +846,7 @@ export default class MainGame extends Phaser.Scene {
         const S3Y = 295;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             x: S3X,
             duration: 360*TIME_MUL,
             ease: "Linear",
@@ -837,7 +856,7 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             y: S3Y,
             duration: 360*TIME_MUL,
             ease: "Sine.In",
@@ -852,7 +871,7 @@ export default class MainGame extends Phaser.Scene {
         const S3Y = 495;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             x: S3X,
             duration: 460*TIME_MUL,
             ease: "Linear",
@@ -860,7 +879,7 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             y: S3Y,
             duration: 460*TIME_MUL,
             ease: "Sine.In",
@@ -875,7 +894,7 @@ export default class MainGame extends Phaser.Scene {
         const S3Y = 585;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             x: S3X,
             duration: 260*TIME_MUL,
             ease: "Linear",
@@ -885,7 +904,7 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             y: S3Y,
             duration: 260*TIME_MUL,
             ease: "Sine.In",
@@ -900,7 +919,7 @@ export default class MainGame extends Phaser.Scene {
         const S3Y = 720;
 
         const tweenX1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             x: S3X,
             duration: 260*TIME_MUL,
             ease: "Linear",
@@ -908,12 +927,12 @@ export default class MainGame extends Phaser.Scene {
         });
 
         const tweenY1 = this.tweens.add({
-            targets: this.ballSprite,
+            targets: this.ballSprite3,
             y: S3Y,
             duration: 260*TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
-                this.ballSprite.setVisible(false);
+                this.ballSprite3.setVisible(false);
                 this.isMoving = false;
                 this.step++;
                 if (this.isSoundEnable) this.sound.play("ball");
@@ -1013,8 +1032,8 @@ export default class MainGame extends Phaser.Scene {
 
          this.soundBtn.y = this.scale.height - 50;
         this.soundBtn.setScale(
-            0.7 * this.fieldScale * scaleX,
-            0.7 * this.fieldScale * scaleY
+            this.fieldScale * scaleX,
+            this.fieldScale * scaleY
         );
 
         this.gameBackContainer.setScale(
