@@ -58,6 +58,8 @@ export default class MainGame extends Phaser.Scene {
     ballSprite = null;
     ballSprite2 = null;
     ballSprite3 = null;
+    ballSprite4 = null;
+    ballSprite5 = null;
 
     t1active = false;
     time1 = null;
@@ -78,9 +80,8 @@ export default class MainGame extends Phaser.Scene {
     fielfH = 840;
 
     constructor() {
-        super('MainGame');
+        super("MainGame");
     }
-
 
     create() {
         this.bgScale =
@@ -99,9 +100,10 @@ export default class MainGame extends Phaser.Scene {
         this.gameBackContainer = this.add.container();
 
         this.video = this.add
-            .video(this.fieldW / 2,10+this.fielfH / 2, "v1")
+            .video(this.fieldW / 2, 10 + this.fielfH / 2, "v1")
             .setOrigin(0.5, 0.5)
-            .setMute(true).setTint(0xD0D0D0); // Чем меньше значение (ближе к 0), тем темнее;
+            .setMute(true)
+            .setTint(0xd0d0d0); // Чем меньше значение (ближе к 0), тем темнее;
         this.video.setScale(0.75);
 
         this.video.play(true);
@@ -115,15 +117,14 @@ export default class MainGame extends Phaser.Scene {
         this.gameBackContainer.add(this.video);
 
         this.frameSprite = this.add
-            .sprite(this.fieldW / 2, 10+this.fielfH / 2, "fr1")
+            .sprite(this.fieldW / 2, 10 + this.fielfH / 2, "fr1")
             .setOrigin(0.5, 0.5)
             .setScale(1);
 
         this.fieldSprite = this.add
-            .sprite(this.fieldW / 2, 10+this.fielfH / 2, "main", "board.png")
+            .sprite(this.fieldW / 2, 10 + this.fielfH / 2, "main", "board.png")
             .setOrigin(0.5, 0.5);
 
-        
         this.gameBackContainer.add(this.fieldSprite);
 
         this.ballSprite = this.add
@@ -136,12 +137,20 @@ export default class MainGame extends Phaser.Scene {
             .setOrigin(0.5, 0.5)
             .setVisible(false);
 
-
         this.ballSprite3 = this.add
             .sprite(B_X, B_Y, "main", "ball.png")
             .setOrigin(0.5, 0.5)
             .setVisible(false);
 
+        this.ballSprite4 = this.add
+            .sprite(B_X, B_Y, "main", "ball.png")
+            .setOrigin(0.5, 0.5)
+            .setVisible(false);
+
+        this.ballSprite5 = this.add
+            .sprite(B_X, B_Y, "main", "ball.png")
+            .setOrigin(0.5, 0.5)
+            .setVisible(false);
 
         this.gameContainer = this.add.container();
 
@@ -152,12 +161,14 @@ export default class MainGame extends Phaser.Scene {
         this.gameScaleContainer.add(this.ballSprite);
         this.gameScaleContainer.add(this.ballSprite2);
         this.gameScaleContainer.add(this.ballSprite3);
+        this.gameScaleContainer.add(this.ballSprite4);
+        this.gameScaleContainer.add(this.ballSprite5);
 
         this.gameScaleContainer.add(this.frameSprite);
 
         this.uiContainer = this.add.container();
 
-                this.soundBtn = this.add
+        this.soundBtn = this.add
             .sprite(0 + 10, this.scale.height - 50, "main", "volumeOn.png")
             .setOrigin(0, 1)
             .setScale(0.7 * this.fieldScale)
@@ -176,12 +187,11 @@ export default class MainGame extends Phaser.Scene {
                     scrY = 800 * (1 - scaleY);
                 }
 
-                const mScale = (window.innerWidth / window.innerHeight>1)?0.7:1.6;
+                const mScale =
+                    window.innerWidth / window.innerHeight > 1 ? 0.7 : 1.6;
 
                 if (!this.isSoundEnable) {
-                    if (!this.ambSound)
-                        this.ambSound = this.sound.add("sndbg");
-
+                    if (!this.ambSound) this.ambSound = this.sound.add("sndbg");
 
                     this.ambSound.play({
                         loop: true,
@@ -189,21 +199,19 @@ export default class MainGame extends Phaser.Scene {
                     this.isSoundEnable = true;
                     this.soundBtn.setTexture("main", "volumeOn.png");
                     this.soundBtn.setScale(
-                        this.fieldScale * scaleX*mScale,
-                        this.fieldScale * scaleY*mScale
+                        this.fieldScale * scaleX * mScale,
+                        this.fieldScale * scaleY * mScale,
                     );
                 } else {
                     this.isSoundEnable = false;
-                    if (this.ambSound)
-                        this.ambSound.stop();
+                    if (this.ambSound) this.ambSound.stop();
                     this.soundBtn.setTexture("main", "volumeOff.png");
                     this.soundBtn.setScale(
-                        0.6 * this.fieldScale * scaleX*mScale,
-                        0.6* this.fieldScale * scaleY*mScale
+                        0.6 * this.fieldScale * scaleX * mScale,
+                        0.6 * this.fieldScale * scaleY * mScale,
                     );
                 }
             });
-
 
         this.btnContainer = this.add.container();
         this.btnContainer.x = 880;
@@ -219,37 +227,37 @@ export default class MainGame extends Phaser.Scene {
             .setOrigin(0.5, 0.57)
             .setInteractive();
 
-
         this.tapBtn = this.add
             .sprite(0, 0, "main", "tap.png")
             .setScale(0.8)
-            .setOrigin(0.5, 0.5)
+            .setOrigin(0.5, 0.5);
 
-        this.tapLeft =  this.add.rectangle(-100, -30, 90, 150, 0x000000, 0).setInteractive();
-        this.tapRight =  this.add.rectangle(100, -30, 90, 150, 0x000000, 0).setInteractive();
+        this.tapLeft = this.add
+            .rectangle(-100, -30, 90, 150, 0x000000, 0)
+            .setInteractive();
+        this.tapRight = this.add
+            .rectangle(100, -30, 90, 150, 0x000000, 0)
+            .setInteractive();
 
-        this.minSprite = this.add.sprite(-80,0, "main", "min.png");
-        this.maxSprite = this.add.sprite(70,0, "main", "max.png");
-        
+        this.minSprite = this.add.sprite(-80, 0, "main", "min.png");
+        this.maxSprite = this.add.sprite(70, 0, "main", "max.png");
 
         this.bonusSprite = this.add
             .sprite(F_W / 2, -1400, "main", "bonus.png")
             .setOrigin(0.5, 0.5)
             .setScale(1.8);
 
-            
         this.logoSprite = this.add
             .sprite(F_W / 2, -50, "main", "logo.png")
-            .setOrigin(0.5, 1).setScale(0.8);
-            
+            .setOrigin(0.5, 1)
+            .setScale(0.8);
 
-        
         this.btnContainer.add(this.speedBack);
         this.btnContainer.add(this.speedBtn);
         this.btnContainer.add(this.tapBtn);
         this.btnContainer.add(this.tapLeft);
         this.btnContainer.add(this.tapRight);
-        this.uiContainer.add(this.btnContainer);    
+        this.uiContainer.add(this.btnContainer);
         this.uiContainer.add(this.bonusSprite);
         this.uiContainer.add(this.logoSprite);
         this.btnContainer.add(this.minSprite);
@@ -262,20 +270,16 @@ export default class MainGame extends Phaser.Scene {
         this.scale.on("resize", this.resizeGame, this);
         this.resizeGame();
 
-
         this.tapLeft.on("pointerdown", () => {
-
-            
-            if (this.speedBtn.angle>=-90)
-                this.speedBtn.setAngle(this.speedBtn.angle-15);
+            if (this.speedBtn.angle >= -90)
+                this.speedBtn.setAngle(this.speedBtn.angle - 15);
         });
 
         this.tapRight.on("pointerdown", () => {
-
-            if (this.speedBtn.angle<=90)
-                this.speedBtn.setAngle(this.speedBtn.angle+15);
+            if (this.speedBtn.angle <= 90)
+                this.speedBtn.setAngle(this.speedBtn.angle + 15);
         });
-        
+
         this.speedBtn.on("pointerdown", () => {
             if (!this.isMoving) {
                 this.step++;
@@ -286,62 +290,71 @@ export default class MainGame extends Phaser.Scene {
 
                 console.log(this.time.now);
 
+                const caseN = Math.floor(Math.random() * 3);
+
                 //if (this.step == 1) this.startGT1();
-                if (this.step ==1 || this.step ==3 || this.step==5)
-                {
-                    this.startGT1();
-                    
-                            this.time.delayedCall(60, () => {
-                                this.startRT1();
+                if (this.step == 1 || this.step == 3 || this.step == 5) {
+                    if (caseN == 0) this.startGT1();
+                    else if (caseN == 1) this.startG2T1();
+                    else this.startRT1();
+
+                    this.time.delayedCall(60, () => {
+                        this.startB2T1();
                     });
 
                     this.time.delayedCall(120, () => {
-                                this.startBT1();
+                        if (caseN == 0) this.startRT1();
+                        else if (caseN == 1) this.startGT1();
+                        else this.startG2T1();
                     });
 
+                    this.time.delayedCall(180, () => {
+                        this.startBT1();
+                    });
 
-
-
+                    this.time.delayedCall(240, () => {
+                        if (caseN == 0) this.startG2T1();
+                        else if (caseN == 1) this.startRT1();
+                        else this.startGT1();
+                    });
                 }
                 //else if (this.step == 3) this.startRT1();
                 //else if (this.step == 5) this.startBT1();
             }
         });
-        
 
-        
         this.startGame();
-		
-		this.ambSound = this.sound.add("sndbg");
 
-                    this.ambSound.play({
-                        loop: true,
-                    });
+        this.ambSound = this.sound.add("sndbg");
 
+        this.ambSound.play({
+            loop: true,
+        });
     }
 
     newStep() {
-        if (this.step == 2 || this.step == 4 || this.step == 6 || this.step == 7) {
- 
+        if (
+            this.step == 2 ||
+            this.step == 4 ||
+            this.step == 6 ||
+            this.step == 7
+        ) {
             if (this.step == 6) this.bonusSprite.setFrame("super bonus.png");
 
-            if (this.step == 7) { 
+            if (this.step == 7) {
                 this.bonusSprite.setFrame("cta.png");
                 this.bonusSprite.setScale(0.8);
-				this.bonusSprite.setInteractive();
-			this.bonusSprite.on("pointerdown", () => {
-
-				window.location.href = "{offer_link}";
-			});	
-                
+                this.bonusSprite.setInteractive();
+                this.bonusSprite.on("pointerdown", () => {
+                    window.location.href = "{offer_link}";
+                });
             }
 
-            if (this.step<7)
-            {
-            this.video.stop();
+            if (this.step < 7) {
+                this.video.stop();
 
-            this.video.video.currentTime = this.step>=6?4.24:0;
-            this.video.play(true);
+                this.video.video.currentTime = this.step >= 6 ? 4.24 : 0;
+                this.video.play(true);
             }
 
             this.isMoving = true;
@@ -355,20 +368,17 @@ export default class MainGame extends Phaser.Scene {
                     this.tweens.add({
                         targets: this.bonusSprite,
                         y: F_H / 2,
-                        duration: this.step==6?1500:600,
+                        duration: this.step == 6 ? 1500 : 600,
                         ease: "Sine.In",
                         onComplete: () => {
-
                             console.log(this.step);
 
                             if (this.step < 7) {
                                 this.bonusSprite.y = -1400;
-                                if (this.step<6)
-                                this.isMoving = false;   
+                                if (this.step < 6) this.isMoving = false;
                             }
 
-                            if (this.step ==6)
-                            {
+                            if (this.step == 6) {
                                 this.step++;
                                 this.newStep();
                             }
@@ -505,8 +515,150 @@ export default class MainGame extends Phaser.Scene {
                                         this.ballSprite.setVisible(false);
                                         //this.isMoving = false;
                                         //this.step++;
-                                        
-                                          if (this.isSoundEnable) this.sound.play("ball");
+
+                                        if (this.isSoundEnable)
+                                            this.sound.play("ball");
+                                        //this.newStep();
+                                        //console.log(this.time.now);
+                                    },
+                                });
+                            },
+                        });
+                    },
+                });
+            },
+        });
+    }
+
+    startG2T1() {
+        this.isMoving = true;
+        this.ballSprite4.x = B_X;
+        this.ballSprite4.y = B_Y;
+        this.ballSprite4.setVisible(true);
+        const S1X = Math.random() * 20 + 65 + (340 - 75) / 2;
+        const S2X = 330 + Math.random() * 20;
+
+        // Фаза 1: x и y параллельно
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite,
+            x: S1X,
+            duration: 450,
+            ease: "Linear",
+            onComplete: () => {
+                this.tweens.add({
+                    targets: this.ballSprite4,
+                    x: S2X,
+                    duration: 450,
+                    ease: "Linear",
+                });
+
+                this.tweens.add({
+                    targets: this.ballSprite4,
+                    y: 225 + Math.random() * 10,
+                    duration: 450,
+                    ease: "Sine.In",
+                    onComplete: () => {
+                        this.startG2T2();
+                    },
+                });
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite4,
+            y: 40,
+            duration: 500,
+            ease: "Sine.Out",
+        });
+    }
+
+    startG2T2() {
+        const S3X = 190 + Math.random() * 20;
+        const S3Y = 405 + Math.random() * 10;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite4,
+            x: S3X,
+            duration: 500,
+            ease: "Linear",
+            onComplete: () => {
+                this.startG2T3();
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite4,
+            y: S3Y,
+            duration: 500,
+            ease: "Sine.In",
+        });
+    }
+
+    startG2T3() {
+        const S3X = 270 + Math.random() * 10;
+        const S3Y = 510;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite4,
+            x: S3X,
+            duration: 500,
+            ease: "Linear",
+            onComplete: () => {
+                this.startEndG2T();
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite4,
+            y: S3Y,
+            duration: 500,
+            ease: "Sine.In",
+        });
+    }
+
+    startEndG2T() {
+        const SX = 285 + Math.random() * 10;
+        const SY = 510;
+        const DX = 14;
+        const DY = 35;
+
+        const timeX = 150;
+        const easeM = "Sine.InOut";
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite,
+            x: SX - DX,
+            y: SY + DY,
+            duration: timeX,
+            ease: easeM,
+            onComplete: () => {
+                const tweenX2 = this.tweens.add({
+                    targets: this.ballSprite4,
+                    x: SX,
+                    y: SY + 2 * DY,
+                    duration: timeX,
+                    ease: easeM,
+                    onComplete: () => {
+                        const tweenX3 = this.tweens.add({
+                            targets: this.ballSprite4,
+                            x: SX - DX,
+                            y: SY + 3 * DY,
+                            duration: timeX,
+                            ease: easeM,
+                            onComplete: () => {
+                                const tweenX4 = this.tweens.add({
+                                    targets: this.ballSprite4,
+                                    x: SX,
+                                    y: SY + 4 * DY + 20,
+                                    duration: timeX,
+                                    ease: easeM,
+                                    onComplete: () => {
+                                        this.ballSprite4.setVisible(false);
+                                        //this.isMoving = false;
+                                        //this.step++;
+
+                                        if (this.isSoundEnable)
+                                            this.sound.play("ball");
                                         //this.newStep();
                                         //console.log(this.time.now);
                                     },
@@ -720,8 +872,6 @@ export default class MainGame extends Phaser.Scene {
     }
 
     startBT1() {
-
-        
         this.isMoving = true;
         this.ballSprite3.x = B_X;
         this.ballSprite3.y = B_Y;
@@ -734,7 +884,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite3,
             x: S1X,
-            duration: 500*TIME_MUL,
+            duration: 500 * TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 this.tweens.add({
@@ -747,7 +897,7 @@ export default class MainGame extends Phaser.Scene {
                 this.tweens.add({
                     targets: this.ballSprite3,
                     y: 136,
-                    duration: 500*TIME_MUL,
+                    duration: 500 * TIME_MUL,
                     ease: "Sine.In",
                     onComplete: () => {
                         this.startBT2();
@@ -759,7 +909,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite3,
             y: 70,
-            duration: 500*TIME_MUL,
+            duration: 500 * TIME_MUL,
             ease: "Sine.Out",
         });
     }
@@ -772,7 +922,7 @@ export default class MainGame extends Phaser.Scene {
         const SY = 136;
         const DX = 14;
         const DY = 35;
-        const timeX = 100*TIME_MUL;
+        const timeX = 100 * TIME_MUL;
         const easeM = "Sine.InOut";
 
         this.tweens.chain({
@@ -795,7 +945,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite3,
             x: S3X,
-            duration: 300*TIME_MUL,
+            duration: 300 * TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 //this.startERT1();
@@ -805,13 +955,13 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite3,
             y: S3Y,
-            duration: 200*TIME_MUL,
+            duration: 200 * TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.tweens.add({
                     targets: this.ballSprite3,
                     y: S3Y + 40,
-                    duration: 100*TIME_MUL,
+                    duration: 100 * TIME_MUL,
                     ease: "Sine.In",
                     onComplete: () => {
                         this.startBT4();
@@ -828,7 +978,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite3,
             x: S3X,
-            duration: 260*TIME_MUL,
+            duration: 260 * TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 //this.startERT1();
@@ -838,7 +988,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite3,
             y: S3Y,
-            duration: 260*TIME_MUL,
+            duration: 260 * TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.startBT5();
@@ -853,7 +1003,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite3,
             x: S3X,
-            duration: 360*TIME_MUL,
+            duration: 360 * TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 //this.startERT1();
@@ -863,7 +1013,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite3,
             y: S3Y,
-            duration: 360*TIME_MUL,
+            duration: 360 * TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.startBT6();
@@ -878,7 +1028,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite3,
             x: S3X,
-            duration: 460*TIME_MUL,
+            duration: 460 * TIME_MUL,
             ease: "Linear",
             onComplete: () => {},
         });
@@ -886,7 +1036,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite3,
             y: S3Y,
-            duration: 460*TIME_MUL,
+            duration: 460 * TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.startBT7();
@@ -901,7 +1051,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite3,
             x: S3X,
-            duration: 260*TIME_MUL,
+            duration: 260 * TIME_MUL,
             ease: "Linear",
             onComplete: () => {
                 //this.startERT1();
@@ -911,7 +1061,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite3,
             y: S3Y,
-            duration: 260*TIME_MUL,
+            duration: 260 * TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.startBT8();
@@ -926,7 +1076,7 @@ export default class MainGame extends Phaser.Scene {
         const tweenX1 = this.tweens.add({
             targets: this.ballSprite3,
             x: S3X,
-            duration: 260*TIME_MUL,
+            duration: 260 * TIME_MUL,
             ease: "Linear",
             onComplete: () => {},
         });
@@ -934,15 +1084,241 @@ export default class MainGame extends Phaser.Scene {
         const tweenY1 = this.tweens.add({
             targets: this.ballSprite3,
             y: S3Y,
-            duration: 260*TIME_MUL,
+            duration: 260 * TIME_MUL,
             ease: "Sine.In",
             onComplete: () => {
                 this.ballSprite3.setVisible(false);
                 this.isMoving = false;
                 this.step++;
                 if (this.isSoundEnable) this.sound.play("ball");
-                
+
                 this.newStep();
+            },
+        });
+    }
+
+    startB2T1() {
+        this.isMoving = true;
+        this.ballSprite5.x = B_X;
+        this.ballSprite5.y = B_Y;
+        this.ballSprite5.setVisible(true);
+
+        const S1X = 285;
+        const S2X = 450;
+
+        // Фаза 1: x и y параллельно
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite5,
+            x: S1X,
+            duration: 500 * TIME_MUL,
+            ease: "Linear",
+            onComplete: () => {
+                this.tweens.add({
+                    targets: this.ballSprite5,
+                    x: S2X,
+                    duration: 450,
+                    ease: "Linear",
+                });
+
+                this.tweens.add({
+                    targets: this.ballSprite5,
+                    y: 139,
+                    duration: 450 * TIME_MUL,
+                    ease: "Sine.In",
+                    onComplete: () => {
+                        this.startB2T2();
+                    },
+                });
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite5,
+            y: 70,
+            duration: 500 * TIME_MUL,
+            ease: "Sine.Out",
+        });
+    }
+
+    startB2T2() {
+        const S3X = 280;
+        const S3Y = 520;
+
+        const SX = 460;
+        const SY = 136;
+        const DX = 19;
+        const DY = 35;
+        const timeX = 100 * TIME_MUL;
+        const easeM = "Sine.InOut";
+
+        this.tweens.chain({
+            targets: this.ballSprite5,
+            tweens: [
+                { x: SX + 40, y: SY, duration: timeX, ease: easeM },
+                { x: SX + 50, y: SY + 63, duration: timeX * 1.6, ease: easeM },
+            ],
+            onComplete: () => {
+                //   this.ballSprite.setVisible(false);
+                this.startB2T3();
+            },
+        });
+    }
+
+    startB2T3() {
+        const S3X = 575 + Math.random() * 20;
+        const S3Y = 95 + Math.random() * 10;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite5,
+            x: S3X,
+            duration: 300 * TIME_MUL,
+            ease: "Linear",
+            onComplete: () => {
+                //this.startERT1();
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite5,
+            y: S3Y,
+            duration: 200 * TIME_MUL,
+            ease: "Sine.In",
+            onComplete: () => {
+                this.tweens.add({
+                    targets: this.ballSprite3,
+                    y: S3Y + 40,
+                    duration: 100 * TIME_MUL,
+                    ease: "Sine.In",
+                    onComplete: () => {
+                        this.startB2T4();
+                    },
+                });
+            },
+        });
+    }
+
+    startB2T4() {
+        const S3X = 660 + Math.random() * 20;
+        const S3Y = 175;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite5,
+            x: S3X,
+            duration: 250 * TIME_MUL,
+            ease: "Linear",
+            onComplete: () => {
+                //this.startERT1();
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite5,
+            y: S3Y,
+            duration: 250 * TIME_MUL,
+            ease: "Sine.In",
+            onComplete: () => {
+                this.startB2T5();
+            },
+        });
+    }
+
+    startB2T5() {
+        const S3X = 710 + Math.random() * 20;
+        const S3Y = 290;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite5,
+            x: S3X,
+            duration: 370 * TIME_MUL,
+            ease: "Linear",
+            onComplete: () => {
+                //this.startERT1();
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite5,
+            y: S3Y,
+            duration: 370 * TIME_MUL,
+            ease: "Sine.In",
+            onComplete: () => {
+                this.startB2T6();
+            },
+        });
+    }
+
+    startB2T6() {
+        const S3X = 720 + Math.random() * 20;
+        const S3Y = 505;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite5,
+            x: S3X,
+            duration: 440 * TIME_MUL,
+            ease: "Linear",
+            onComplete: () => {},
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite5,
+            y: S3Y,
+            duration: 440 * TIME_MUL,
+            ease: "Sine.In",
+            onComplete: () => {
+                this.startB2T7();
+            },
+        });
+    }
+
+    startB2T7() {
+        const S3X = 750 + Math.random() * 10;
+        const S3Y = 580;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite5,
+            x: S3X,
+            duration: 230 * TIME_MUL,
+            ease: "Linear",
+            onComplete: () => {
+                //this.startERT1();
+            },
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite5,
+            y: S3Y,
+            duration: 240 * TIME_MUL,
+            ease: "Sine.In",
+            onComplete: () => {
+                this.startB2T8();
+            },
+        });
+    }
+
+    startB2T8() {
+        const S3X = 760;
+        const S3Y = 700;
+
+        const tweenX1 = this.tweens.add({
+            targets: this.ballSprite5,
+            x: S3X,
+            duration: 260 * TIME_MUL,
+            ease: "Linear",
+            onComplete: () => {},
+        });
+
+        const tweenY1 = this.tweens.add({
+            targets: this.ballSprite5,
+            y: S3Y,
+            duration: 260 * TIME_MUL,
+            ease: "Sine.In",
+            onComplete: () => {
+                this.ballSprite5.setVisible(false);
+                //this.isMoving = false;
+                //this.step++;
+                if (this.isSoundEnable) this.sound.play("ball");
+
+                //this.newStep();
             },
         });
     }
@@ -961,27 +1337,26 @@ export default class MainGame extends Phaser.Scene {
                 this.video.play(true);
             }
 
-            if (currentTime >= 4.06 && ( this.step == 1 || this.step == 3)) {
+            if (currentTime >= 4.06 && (this.step == 1 || this.step == 3)) {
                 this.video.stop();
                 this.video.video.currentTime = 1.18;
                 this.video.play(true);
             }
 
-            if (currentTime >= 7 &&  this.step == 5) {
+            if (currentTime >= 7 && this.step == 5) {
                 this.video.stop();
                 //this.video.video.currentTime = 2.03;
                 //this.video.play(true);
             }
 
-
             if (currentTime >= 1.15 && (this.step == 2 || this.step == 4)) {
                 this.video.stop();
-                this.video.video.currentTime = this.step==2?0:0.24;
+                this.video.video.currentTime = this.step == 2 ? 0 : 0.24;
                 this.video.play(true);
             }
 
-            if (currentTime >= 7.1 && this.step >5) {
-                console.log("loop",this.step);
+            if (currentTime >= 7.1 && this.step > 5) {
+                console.log("loop", this.step);
                 this.video.stop();
                 this.video.video.currentTime = 4.24;
                 this.video.play(true);
@@ -1007,15 +1382,11 @@ export default class MainGame extends Phaser.Scene {
             scrY = 1024 * (1 - scaleY);
         }
 
-        if (window.innerWidth*1.4 < window.innerHeight) {
-
-            
-            this.btnContainer.x = F_W/2;
-            this.btnContainer.y = F_H+200;
+        if (window.innerWidth * 1.4 < window.innerHeight) {
+            this.btnContainer.x = F_W / 2;
+            this.btnContainer.y = F_H + 200;
             this.btnContainer.setScale(1.5);
-        }
-        else
-        {
+        } else {
             this.btnContainer.x = 880;
             this.btnContainer.y = 750;
             this.btnContainer.setScale(1);
@@ -1035,12 +1406,12 @@ export default class MainGame extends Phaser.Scene {
             (this.scale.width - this.fieldScale * (offsetX * 2 + F_W)) / 2;
         this.shiftY = (this.scale.height - this.fieldScale * F_H) / 2 - 20;
 
-         this.soundBtn.y = this.scale.height - 50;
-        const mScale = (window.innerWidth / window.innerHeight>1)?0.7:1.6;
+        this.soundBtn.y = this.scale.height - 50;
+        const mScale = window.innerWidth / window.innerHeight > 1 ? 0.7 : 1.6;
 
         this.soundBtn.setScale(
-            this.fieldScale * scaleX*mScale,
-            this.fieldScale * scaleY*mScale
+            this.fieldScale * scaleX * mScale,
+            this.fieldScale * scaleY * mScale,
         );
 
         this.gameBackContainer.setScale(
@@ -1062,22 +1433,18 @@ export default class MainGame extends Phaser.Scene {
             this.shiftX + scrX - 2 * (GRID_OFFSET_X - offsetX);
         this.uiContainer.x = this.shiftX + scrX - 2 * (GRID_OFFSET_X - offsetX);
 
-        
         const dY = 60;
         this.gameBackContainer.y = this.shiftY + scrY - dY;
         this.gameContainer.y = this.shiftY + scrY - dY;
         this.uiContainer.y = this.shiftY + scrY - dY;
 
-        if (window.innerWidth*1.5 < window.innerHeight) {
-               this.logoSprite.setOrigin(0.5,0);
-                this.logoSprite.y = 100-this.uiContainer.y; 
-
+        if (window.innerWidth * 1.5 < window.innerHeight) {
+            this.logoSprite.setOrigin(0.5, 0);
+            this.logoSprite.y = 100 - this.uiContainer.y;
+        } else {
+            this.logoSprite.setOrigin(0.5, 1);
+            this.logoSprite.y = -50;
         }
-        else
-            {
-                this.logoSprite.setOrigin(0.5,1);
-                this.logoSprite.y = -50;
-            }        
 
         const scaleBg = scaleX > scaleY ? scaleX / scaleY : scaleY / scaleX;
 
